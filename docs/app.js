@@ -6,17 +6,41 @@ const state = {
 };
 
 const fileInput = document.getElementById('file-input');
+const uploadLabel = document.getElementById('upload-label');
+const demoTrigger = document.getElementById('demo-trigger');
+const demoContainer = document.getElementById('demo-container');
+const demoVideo = document.getElementById('demo-video');
+const closeDemo = document.getElementById('close-demo');
 const storyContainer = document.getElementById('story-container');
 const storyRail = document.getElementById('story-rail');
 const storyProgress = document.getElementById('story-progress');
-const downloadBtn = document.getElementById('download-slide');
 const shareBtn = document.getElementById('share-slide');
 const loadingBanner = document.getElementById('loading');
 const errorBanner = document.getElementById('error');
 
+if (demoTrigger) {
+  demoTrigger.addEventListener('click', (event) => {
+    event.preventDefault();
+    openDemoPreview();
+  });
+}
+
+if (uploadLabel) {
+  uploadLabel.addEventListener('click', () => {
+    openDemoPreview();
+  });
+}
+
+if (closeDemo) {
+  closeDemo.addEventListener('click', () => {
+    closeDemoPreview();
+  });
+}
+
 fileInput.addEventListener('change', async (event) => {
   const file = event.target.files?.[0];
   if (!file) return;
+  closeDemoPreview();
   resetUI();
 
   try {
@@ -33,9 +57,9 @@ fileInput.addEventListener('change', async (event) => {
     }
 
     const analysis = analyse(messages);
+    storyContainer.classList.remove('hidden');
     renderStory(analysis);
     setLoading(false);
-    storyContainer.classList.remove('hidden');
   } catch (error) {
     console.error(error);
     setLoading(false);
@@ -43,10 +67,23 @@ fileInput.addEventListener('change', async (event) => {
   }
 });
 
-downloadBtn.addEventListener('click', () => saveSlide());
 shareBtn.addEventListener('click', () => shareSlide());
 
+function openDemoPreview() {
+  if (!demoContainer || !demoVideo) return;
+  demoContainer.classList.remove('hidden');
+  demoVideo.currentTime = 0;
+  demoVideo.play().catch(() => {});
+}
+
+function closeDemoPreview() {
+  if (!demoContainer || !demoVideo) return;
+  demoContainer.classList.add('hidden');
+  demoVideo.pause();
+}
+
 function resetUI() {
+  closeDemoPreview();
   storyContainer.classList.add('hidden');
   storyRail.innerHTML = '';
   storyProgress.innerHTML = '';
@@ -355,6 +392,11 @@ function buildContext({
 }
 
 function buildChartData({ sortedMonthly, monthlyRoleCounts, messagesByRole, sortedDaily, assistantDailyStats, hourCounts, weekdayCounts }) {
+  const sampledAssistantTrend = assistantDailyStats.filter((_, idx, arr) => {
+    if (arr.length <= 90) return true;
+    const step = Math.ceil(arr.length / 90);
+    return idx % step === 0;
+  });
   const monthLabels = sortedMonthly.map((item) => formatMonthLabel(item.date));
   const roles = Array.from(messagesByRole.keys()).filter((role) => ['assistant', 'user', 'tool', 'system'].includes(role));
 
@@ -384,8 +426,8 @@ function buildChartData({ sortedMonthly, monthlyRoleCounts, messagesByRole, sort
     return running;
   });
 
-  const assistantTrendLabels = assistantDailyStats.map((item) => formatDateLabel(item.date));
-  const assistantTrendData = assistantDailyStats.map((item) => item.meanWord);
+  const assistantTrendLabels = sampledAssistantTrend.map((item) => formatDateLabel(item.date));
+  const assistantTrendData = sampledAssistantTrend.map((item) => item.meanWord);
 
   const hourLabels = Array.from({ length: 24 }, (_, h) => `${h.toString().padStart(2, '0')}:00`);
   const weekdayOrder = [1, 2, 3, 4, 5, 6, 0];
@@ -728,7 +770,7 @@ function renderStory({ context, chartData }) {
     storyProgress.appendChild(dot);
 
     if (canvas && definition.chart) {
-      renderChart(canvas, definition.chart);
+      requestAnimationFrame(() => renderChart(canvas, definition.chart));
     }
   });
 
@@ -858,32 +900,31 @@ function scrollToSlide(idx) {
   entry.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-function saveSlide() {
-  const entry = state.slides[currentSlideIndex()];
-  if (!entry) return;
-  html2canvas(entry.element, { backgroundColor: null, scale: 3 }).then((canvas) => {
-    const link = document.createElement('a');
-    link.download = `gpt-recap-slide-${state.slides.indexOf(entry) + 1}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-  });
-}
-
 function shareSlide() {
   const entry = state.slides[currentSlideIndex()];
   if (!entry) return;
   html2canvas(entry.element, { backgroundColor: null, scale: 3 }).then((canvas) => {
     canvas.toBlob((blob) => {
-      if (!blob) {
-        saveSlide();
-        return;
-      }
-      const file = new File([blob],`gpt-recap-slide-${state.slides.indexOf(entry)+1}.png`,{ type:'image/png' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        navigator.share({ files: [file], title: 'GPT Recap', text: 'My ChatGPT recap' }).catch(saveSlide);
+      if (!blob) return;
+      const index = state.slides.indexOf(entry) + 1;
+      const fileName = `gpt-recap-slide-${index}.png`;
+      if (navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: 'image/png' })] })) {
+        const file = new File([blob], fileName, { type: 'image/png' });
+        navigator.share({ files: [file], title: 'GPT Recap', text: 'My ChatGPT recap' })
+          .catch(() => downloadBlob(blob, fileName));
       } else {
-        saveSlide();
+        downloadBlob(blob, fileName);
+        alert('Slide saved as PNG. Share it manually on your story.');
       }
     }, 'image/png');
   });
+}
+
+function downloadBlob(blob, fileName) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileName;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
