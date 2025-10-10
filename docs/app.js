@@ -805,6 +805,9 @@ function createSlide(definition, index) {
 function renderChart(canvas, config) {
   if (!window.Chart) return;
   const ctx = canvas.getContext('2d');
+  const parentWidth = canvas.parentElement.clientWidth || 320;
+  canvas.width = parentWidth;
+  canvas.height = 260;
   if (!state.chartDefaultsSet) {
     // eslint-disable-next-line no-undef
     Chart.defaults.color = '#e2e8f0';
