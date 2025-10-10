@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GPT Recap</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div class="copy">
+          <h1>GPT Recap</h1>
+          <p>
+            Drop your exported <code>conversations.json</code> file and we will build a
+            TikTok/Instagram-ready recap directly in your browser. No uploads, no servers.
+          </p>
+          <label class="upload">
+            <input type="file" id="file-input" accept="application/json" />
+            <span>Select conversations.json</span>
+          </label>
+          <p class="hint">Your data never leaves this page. Everything runs locally.</p>
+        </div>
+      </section>
+
+      <section id="error" class="banner hidden"></section>
+
+      <section id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p>Crunching the recap…</p>
+      </section>
+
+      <section id="story-container" class="story-container hidden">
+        <header class="story-toolbar">
+          <div class="brand">gpt recap</div>
+          <div class="actions">
+            <button id="download-slide" class="action">Save slide</button>
+            <button id="share-slide" class="action">Share</button>
+          </div>
+        </header>
+        <div id="story-rail" class="story-rail"></div>
+        <div id="story-progress" class="story-progress"></div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" integrity="sha256-glPgk41sJLdnOJgmu6pfk2t671CyMfCVx/gvBy06SnA=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" integrity="sha256-hl5EhlBbXjg5eQof8RP4eAbOe+tfLOcAfeUOLuO/5wE=" crossorigin="anonymous"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

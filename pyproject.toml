@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gpt-recap"
+version = "0.1.0"
+description = "Analyze exported ChatGPT conversations and generate a Spotify-style yearly recap."
+authors = [{ name = "Onur", email = "eonurk@gmail.com" }]
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+dependencies = [
+  "pandas>=2.0",
+  "numpy>=1.24",
+  "matplotlib>=3.7",
+  "seaborn>=0.12",
+  "jinja2>=3.1",
+]
+
+[project.scripts]
+gpt-recap = "gpt_recap.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
