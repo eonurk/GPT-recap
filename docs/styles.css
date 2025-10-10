@@ -223,7 +223,8 @@ code {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
 }
 
 .slide .tag {
@@ -285,6 +286,19 @@ code {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(203, 213, 225, 0.75);
+}
+
+.visual {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+}
+
+.visual canvas {
+  width: 100%;
+  max-height: 260px;
 }
 
 .visual img {
@@ -367,15 +381,22 @@ code {
   }
 
   .storyrail {
-    height: calc(100vh - 110px);
+    height: auto;
+    max-height: none;
   }
 
   .slide {
     width: 92%;
     border-radius: 28px;
+    aspect-ratio: unset;
+    min-height: calc(100vh - 140px);
   }
 
   .stats {
     grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .visual {
+    min-height: 200px;
   }
 }
