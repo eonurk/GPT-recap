@@ -163,7 +163,6 @@ code {
   display: flex;
 }
 
-
 .hint {
 	font-size: 0.9rem;
 	color: rgba(148, 163, 184, 0.8);
@@ -491,6 +490,14 @@ code {
 	);
 }
 
+.floating-share {
+  margin-top: 24px;
+  align-self: center;
+  padding: 10px 24px;
+  width: 60%;
+  max-width: 240px;
+}
+
 @media (max-width: 540px) {
 	body {
 		padding: 24px 12px 36px;
@@ -522,6 +529,11 @@ code {
 	.story-toolbar .actions {
 		justify-content: center;
 	}
+
+	.floating-share {
+		width: 100%;
+		text-align: center;
+	}
 }
 
 .action.secondary.gh {
@@ -537,3 +549,12 @@ code {
 	fill: currentColor;
 	display: block;
 }
+
+.floating-share {
+  margin-top: 24px;
+  align-self: center;
+  padding: 10px 24px;
+  width: 60%;
+  max-width: 240px;
+}
+

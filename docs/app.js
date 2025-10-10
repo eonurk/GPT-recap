@@ -14,7 +14,6 @@ const closeDemo = document.getElementById('close-demo');
 const storyContainer = document.getElementById('story-container');
 const storyRail = document.getElementById('story-rail');
 const storyProgress = document.getElementById('story-progress');
-const shareBtn = document.getElementById('share-slide');
 const loadingBanner = document.getElementById('loading');
 const errorBanner = document.getElementById('error');
 
@@ -67,7 +66,6 @@ fileInput.addEventListener('change', async (event) => {
   }
 });
 
-shareBtn.addEventListener('click', () => shareSlide());
 
 function openDemoPreview() {
   if (!demoContainer || !demoVideo) return;
@@ -760,9 +758,12 @@ function renderStory({ context, chartData }) {
   ];
 
   slides.forEach((definition, idx) => {
-    const { element, canvas } = createSlide(definition, idx);
+    const { element, canvas, shareButton } = createSlide(definition, idx);
     storyRail.appendChild(element);
     state.slides.push({ element, canvas, chartConfig: definition.chart });
+    if (shareButton) {
+      shareButton.addEventListener('click', () => shareSlide(idx));
+    }
 
     const dot = document.createElement('span');
     dot.className = 'dot' + (idx === 0 ? ' active' : '');
@@ -834,14 +835,20 @@ function createSlide(definition, index) {
     wrapper.appendChild(chartWrap);
   }
 
+  const shareButton = document.createElement('button');
+  shareButton.type = 'button';
+  shareButton.className = 'action share floating-share';
+  shareButton.textContent = 'Share this slide';
+
   if (definition.footer) {
     const footer = document.createElement('footer');
     footer.textContent = definition.footer;
     wrapper.appendChild(footer);
   }
 
+  wrapper.appendChild(shareButton);
   slide.appendChild(wrapper);
-  return { element: slide, canvas };
+  return { element: slide, canvas, shareButton };
 }
 
 function renderChart(canvas, config) {
@@ -900,8 +907,8 @@ function scrollToSlide(idx) {
   entry.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-function shareSlide() {
-  const entry = state.slides[currentSlideIndex()];
+function shareSlide(entryIndex = currentSlideIndex()) {
+  const entry = state.slides[entryIndex];
   if (!entry) return;
   html2canvas(entry.element, { backgroundColor: null, scale: 3 }).then((canvas) => {
     canvas.toBlob((blob) => {
