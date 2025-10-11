@@ -1666,94 +1666,81 @@ function shareSlide(entryIndex = currentSlideIndex()) {
 	const targetWidth = 1080;
 	const targetHeight = 1920;
 
-	// Get the actual rendered dimensions of the slide
-	const rect = entry.element.getBoundingClientRect();
+	// Temporarily set exact dimensions for perfect Instagram capture
+	const originalWidth = entry.element.style.width;
+	const originalHeight = entry.element.style.height;
+	const originalMaxHeight = entry.element.style.maxHeight;
+	const originalMinHeight = entry.element.style.minHeight;
 
-	html2canvas(entry.element, {
-		backgroundColor: null,
-		scale: 2,
-		width: rect.width,
-		height: rect.height,
-		x: 0,
-		y: 0,
-		scrollX: 0,
-		scrollY: 0,
-		useCORS: true,
-		allowTaint: true,
-	}).then((originalCanvas) => {
-		// Restore share button
-		if (entry.shareButton) {
-			entry.shareButton.classList.remove("hide-capturing");
-		}
+	entry.element.style.width = "540px";
+	entry.element.style.height = "960px";
+	entry.element.style.maxHeight = "960px";
+	entry.element.style.minHeight = "960px";
 
-		// Restore demo badge
-		if (demoBadge) {
-			demoBadge.classList.remove("hide-capturing");
-		}
+	// Wait for reflow
+	setTimeout(() => {
+		html2canvas(entry.element, {
+			backgroundColor: null,
+			scale: 2, // 540 * 2 = 1080, 960 * 2 = 1920
+			useCORS: true,
+			allowTaint: true,
+			logging: false,
+			windowWidth: 540,
+			windowHeight: 960,
+		}).then((canvas) => {
+			// Restore original dimensions
+			entry.element.style.width = originalWidth;
+			entry.element.style.height = originalHeight;
+			entry.element.style.maxHeight = originalMaxHeight;
+			entry.element.style.minHeight = originalMinHeight;
 
-		// Create a new canvas with Instagram story dimensions
-		const storyCanvas = document.createElement("canvas");
-		storyCanvas.width = targetWidth;
-		storyCanvas.height = targetHeight;
-		const ctx = storyCanvas.getContext("2d");
-
-		// Calculate aspect ratios
-		const canvasRatio = originalCanvas.width / originalCanvas.height;
-		const storyRatio = targetWidth / targetHeight;
-
-		let scaledWidth, scaledHeight;
-		let x = 0;
-		let y = 0;
-
-		// Scale to fill the entire Instagram story canvas (cover mode)
-		if (canvasRatio > storyRatio) {
-			// Canvas is wider - fit to height and crop sides
-			scaledHeight = targetHeight;
-			scaledWidth = scaledHeight * canvasRatio;
-			x = (targetWidth - scaledWidth) / 2;
-		} else {
-			// Canvas is taller - fit to width and crop top/bottom
-			scaledWidth = targetWidth;
-			scaledHeight = scaledWidth / canvasRatio;
-			y = (targetHeight - scaledHeight) / 2;
-		}
-
-		// Draw the slide scaled to fill the canvas with its own background
-		ctx.drawImage(originalCanvas, x, y, scaledWidth, scaledHeight);
-
-		storyCanvas.toBlob((blob) => {
-			if (!blob) return;
-			const index = state.slides.indexOf(entry) + 1;
-			const fileName = `chatrecap-story-${index}.png`;
-			if (
-				navigator.canShare &&
-				navigator.canShare({
-					files: [new File([blob], fileName, { type: "image/png" })],
-				})
-			) {
-				const file = new File([blob], fileName, { type: "image/png" });
-				navigator
-					.share({
-						files: [file],
-						title: "ChatRecap",
-						text: "My ChatGPT recap ✨",
-					})
-					.catch(() => downloadBlob(blob, fileName));
-			} else {
-				downloadBlob(blob, fileName);
-				const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-				if (isMobile) {
-					alert(
-						"Story saved! Optimized for Instagram (1080x1920). Upload to your story from your gallery."
-					);
-				} else {
-					alert(
-						"Slide saved as Instagram story format (1080x1920). Share it on your story!"
-					);
-				}
+			// Restore share button
+			if (entry.shareButton) {
+				entry.shareButton.classList.remove("hide-capturing");
 			}
-		}, "image/png");
-	});
+
+			// Restore demo badge
+			if (demoBadge) {
+				demoBadge.classList.remove("hide-capturing");
+			}
+
+			// Canvas should now be exactly 1080x1920
+			canvas.toBlob((blob) => {
+				if (!blob) return;
+				const index = state.slides.indexOf(entry) + 1;
+				const fileName = `chatrecap-story-${index}.png`;
+				if (
+					navigator.canShare &&
+					navigator.canShare({
+						files: [new File([blob], fileName, { type: "image/png" })],
+					})
+				) {
+					const file = new File([blob], fileName, { type: "image/png" });
+					navigator
+						.share({
+							files: [file],
+							title: "ChatRecap",
+							text: "My ChatGPT recap ✨",
+						})
+						.catch(() => downloadBlob(blob, fileName));
+				} else {
+					downloadBlob(blob, fileName);
+					const isMobile = /iPhone|iPad|iPod|Android/i.test(
+						navigator.userAgent
+					);
+					if (isMobile) {
+						alert(
+							"Story saved! Optimized for Instagram (1080x1920). Upload to your story from your gallery."
+						);
+					} else {
+						alert(
+							"Slide saved as Instagram story format (1080x1920). Share it on your story!"
+						);
+					}
+				}
+			}, "image/png");
+		});
+	}, 100);
 }
 
 function downloadBlob(blob, fileName) {

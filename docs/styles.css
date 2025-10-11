@@ -1,12 +1,7 @@
 :root {
 	color-scheme: dark;
 	font-family: "Manrope", "Helvetica Neue", Arial, sans-serif;
-	background: radial-gradient(
-		circle at 20% -10%,
-		#0f172a 0%,
-		#020617 55%,
-		#000 100%
-	);
+	background: rgb(29, 29, 29);
 	color: #e2e8f0;
 }
 
@@ -34,25 +29,26 @@ main {
 }
 
 .hero {
-	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	flex-wrap: wrap;
 	border-radius: 32px;
-	border: 1px solid rgba(148, 163, 184, 0.2);
 	padding: clamp(24px, 5vw, 40px);
-	background: linear-gradient(
-		160deg,
-		rgba(15, 23, 42, 0.8),
-		rgba(30, 41, 59, 0.55)
-	);
+	background: rgb(41, 41, 41);
 	box-shadow: 0 28px 60px rgba(8, 7, 15, 0.65);
 	width: 100%;
+}
+
+.hero h2 {
+	font-weight: 600;
+	color: #e2e8f0;
+	text-align: center;
 }
 
 .copy {
 	display: flex;
 	flex-direction: column;
+	align-items: center;
 	gap: 16px;
 }
 
@@ -98,7 +94,7 @@ p {
 
 code {
 	background: rgba(30, 41, 59, 0.6);
-	padding: 2px 6px;
+	padding: 1px 6px;
 	border-radius: 6px;
 	color: #93c5fd;
 	font-family: "Menlo", "SFMono-Regular", monospace;
@@ -161,7 +157,7 @@ code {
 
 .ghost-link {
 	margin-top: 14px;
-	align-self: flex-start;
+
 	background: none;
 	border: none;
 	color: #93c5fd;
@@ -192,7 +188,7 @@ code {
 }
 
 .demo-card {
-	background: rgba(15, 23, 42, 0.6);
+	background: rgba(29, 29, 29);
 	border: 1px solid rgba(148, 163, 184, 0.2);
 	border-radius: 28px;
 	padding: 32px;
@@ -314,6 +310,7 @@ code {
 }
 
 .hint {
+	text-align: center;
 	font-size: 0.9rem;
 	color: rgba(148, 163, 184, 0.8);
 }
@@ -437,12 +434,13 @@ code {
 .story-rail {
 	position: relative;
 	height: auto;
-	max-height: min(calc(100vh - 140px), 860px);
+	max-height: min(calc(100vh - 180px), 860px);
 	overflow-y: auto;
 	scroll-snap-type: y mandatory;
 	scroll-behavior: smooth;
 	border-radius: 32px;
-
+	/* dont show the scrollbar */
+	scrollbar-width: none;
 	width: min(1200px, 100%);
 	margin: 0 auto;
 	background: rgba(15, 23, 42, 0.55);
@@ -871,7 +869,6 @@ code {
 
 @media (max-width: 540px) {
 	body {
-		padding: 16px 12px 32px;
 		overscroll-behavior: none;
 	}
 
@@ -890,7 +887,7 @@ code {
 
 	.story-rail {
 		max-height: none;
-		height: calc(100vh - 180px);
+		height: calc(100vh - 200px);
 		scroll-snap-stop: always;
 		user-select: none;
 		-webkit-user-select: none;
