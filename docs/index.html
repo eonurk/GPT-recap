@@ -1,23 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-
-
-
-
-    <!-- Google tag (gtag.js) -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    
+    <title>ChatRecap - Your ChatGPT Year in Review</title>
+    <meta name="description" content="Transform your ChatGPT conversations into beautiful, shareable Instagram stories. Analyze your AI chat history with ChatRecap." />
+    <meta name="keywords" content="ChatGPT, recap, analytics, AI chat history, conversation analysis" />
+    <meta name="author" content="ChatRecap" />
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="ChatRecap - Your ChatGPT Year in Review" />
+    <meta property="og:description" content="Beautiful insights from your ChatGPT conversations" />
+    <meta property="og:url" content="https://chatrecap.co" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-2DDRP47X9B"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-2DDRP47X9B');
     </script>
-
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ChatRecap</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -36,7 +42,7 @@
               <input type="file" id="file-input" accept="application/json" />
               <span>Select File</span>
             </label>
-            <button id="try-demo-btn" class="demo-btn">✨ Try Demo</button>
+            <button id="try-demo-btn" class="demo-btn" type="button">Try Demo</button>
           </div>
           <button id="demo-trigger" class="ghost-link">How to export your data</button>
           <p class="hint">Your data never leaves this page. Everything runs locally.</p>

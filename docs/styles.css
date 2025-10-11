@@ -414,10 +414,6 @@ code {
 	min-height: 0;
 }
 
-.chart-slide footer {
-	margin-top: clamp(14px, 2vh, 24px);
-}
-
 .chart-slide .chart-insights .highlights {
 	grid-template-columns: repeat(1, minmax(0, 1fr));
 	gap: clamp(8px, 1.2vw, 16px);
@@ -465,15 +461,16 @@ code {
 .slide::after {
 	content: "chatrecap.co";
 	position: absolute;
-	bottom: clamp(18px, 3.5vw, 40px);
-	right: clamp(20px, 4vw, 48px);
-	font-size: clamp(0.68rem, 0.6rem + 0.35vw, 0.88rem);
+	bottom: clamp(8px, 2vh, 16px);
+	left: clamp(24px, 4vw, 52px);
+	font-size: 0.7rem;
 	font-weight: 600;
-	letter-spacing: 0.05em;
-	color: rgba(148, 163, 184, 0.45);
+	letter-spacing: 0.1em;
+	color: rgba(148, 163, 184, 0.4);
 	pointer-events: none;
 	user-select: none;
 	z-index: 3;
+	text-transform: uppercase;
 }
 
 .slide::before {
@@ -497,6 +494,7 @@ code {
 	flex: 1;
 	min-height: 0;
 	overflow: hidden;
+	padding-bottom: clamp(48px, 8vh, 72px);
 }
 
 .slide .tag {
@@ -666,12 +664,16 @@ code {
 }
 
 .slide footer {
-	margin-top: auto;
-	padding-top: clamp(8px, 2vh, 16px);
+	position: absolute;
+	bottom: clamp(20px, 3vh, 32px);
+	left: 0;
+	right: clamp(24px, 4vw, 52px);
 	font-size: 0.75rem;
 	letter-spacing: 0.1em;
 	text-transform: uppercase;
 	color: rgba(203, 213, 225, 0.7);
+	text-align: left;
+	z-index: 2;
 }
 
 .story-progress {
@@ -755,12 +757,13 @@ code {
 
 .floating-share {
 	position: absolute;
-	top: 0;
-	right: clamp(10px, 2.8vw, 24px);
+	top: clamp(20px, 3vh, 32px);
+	right: clamp(20px, 3.5vw, 32px);
 	padding: 8px 12px;
 	border-radius: 999px;
 	width: auto;
 	max-width: none;
+	z-index: 3;
 }
 
 @media (max-width: 540px) {
@@ -825,12 +828,12 @@ code {
 	}
 
 	.slide::after {
-		bottom: clamp(16px, 5vh, 28px);
-		right: clamp(18px, 6vw, 28px);
-		font-size: clamp(0.65rem, 0.55rem + 0.7vw, 0.82rem);
+		bottom: clamp(8px, 2vh, 16px);
+		left: clamp(24px, 4vw, 52px);
+		font-size: 0.7rem;
 		font-weight: 600;
-		letter-spacing: 0.08em;
-		color: rgba(148, 163, 184, 0.5);
+		letter-spacing: 0.1em;
+		color: rgba(148, 163, 184, 0.4);
 	}
 
 	.stats {
@@ -929,9 +932,18 @@ code {
 	}
 
 	.floating-share {
-		position: static;
-		width: 100%;
-		margin-top: 18px;
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: auto;
+		padding: 5px 14px;
+		font-size: 0.7rem;
+	}
+
+	.slide footer {
+		bottom: clamp(16px, 2.5vh, 24px);
+		right: clamp(18px, 5vw, 24px);
+		font-size: 0.8rem;
 	}
 }
 

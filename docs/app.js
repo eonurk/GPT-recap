@@ -48,7 +48,113 @@ const DEMO_DATA = {
 		quiet_month_label: "—",
 		quiet_month_value: "—",
 	},
-	chartData: {},
+	chartData: {
+		hourlyActivity: {
+			type: "bar",
+			data: {
+				labels: [
+					"00:00",
+					"01:00",
+					"02:00",
+					"03:00",
+					"04:00",
+					"05:00",
+					"06:00",
+					"07:00",
+					"08:00",
+					"09:00",
+					"10:00",
+					"11:00",
+					"12:00",
+					"13:00",
+					"14:00",
+					"15:00",
+					"16:00",
+					"17:00",
+					"18:00",
+					"19:00",
+					"20:00",
+					"21:00",
+					"22:00",
+					"23:00",
+				],
+				datasets: [
+					{
+						label: "Messages",
+						data: [
+							120, 85, 45, 30, 25, 40, 180, 420, 680, 920, 1150, 1380, 1520,
+							1785, 1650, 1420, 1280, 1050, 880, 720, 580, 450, 320, 180,
+						],
+						backgroundColor: [
+							"rgba(96, 165, 250, 0.25)",
+							"rgba(96, 165, 250, 0.27)",
+							"rgba(96, 165, 250, 0.29)",
+							"rgba(96, 165, 250, 0.31)",
+							"rgba(96, 165, 250, 0.33)",
+							"rgba(96, 165, 250, 0.35)",
+							"rgba(96, 165, 250, 0.37)",
+							"rgba(96, 165, 250, 0.39)",
+							"rgba(96, 165, 250, 0.41)",
+							"rgba(96, 165, 250, 0.43)",
+							"rgba(96, 165, 250, 0.45)",
+							"rgba(96, 165, 250, 0.47)",
+							"rgba(96, 165, 250, 0.49)",
+							"rgba(96, 165, 250, 0.51)",
+							"rgba(96, 165, 250, 0.53)",
+							"rgba(96, 165, 250, 0.55)",
+							"rgba(96, 165, 250, 0.57)",
+							"rgba(96, 165, 250, 0.59)",
+							"rgba(96, 165, 250, 0.61)",
+							"rgba(96, 165, 250, 0.63)",
+							"rgba(96, 165, 250, 0.65)",
+							"rgba(96, 165, 250, 0.67)",
+							"rgba(96, 165, 250, 0.69)",
+							"rgba(96, 165, 250, 0.71)",
+						],
+					},
+				],
+			},
+			options: {
+				responsive: true,
+				scales: {
+					y: {
+						ticks: { color: "#cbd5f5" },
+						grid: { color: "rgba(148, 163, 184, 0.15)" },
+					},
+					x: {
+						ticks: { color: "#cbd5f5", maxRotation: 60, minRotation: 60 },
+						grid: { display: false },
+					},
+				},
+				plugins: { legend: { display: false } },
+			},
+		},
+		weekdayActivity: {
+			type: "bar",
+			data: {
+				labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+				datasets: [
+					{
+						label: "Messages",
+						data: [3554, 3280, 3120, 2950, 2880, 1578, 2925],
+						backgroundColor: "rgba(129, 140, 248, 0.55)",
+					},
+				],
+			},
+			options: {
+				indexAxis: "y",
+				responsive: true,
+				scales: {
+					x: {
+						ticks: { color: "#cbd5f5" },
+						grid: { color: "rgba(148, 163, 184, 0.15)" },
+					},
+					y: { ticks: { color: "#cbd5f5" }, grid: { display: false } },
+				},
+				plugins: { legend: { display: false } },
+			},
+		},
+	},
 };
 
 const fileInput = document.getElementById("file-input");
@@ -1561,13 +1667,20 @@ function shareSlide(entryIndex = currentSlideIndex()) {
 	const targetWidth = 1080;
 	const targetHeight = 1920;
 
+	// Get the actual rendered dimensions of the slide
+	const rect = entry.element.getBoundingClientRect();
+
 	html2canvas(entry.element, {
 		backgroundColor: null,
 		scale: 2,
-		width: entry.element.scrollWidth,
-		height: entry.element.scrollHeight,
-		windowWidth: entry.element.scrollWidth,
-		windowHeight: entry.element.scrollHeight,
+		width: rect.width,
+		height: rect.height,
+		x: 0,
+		y: 0,
+		scrollX: 0,
+		scrollY: 0,
+		useCORS: true,
+		allowTaint: true,
 	}).then((originalCanvas) => {
 		// Restore share button
 		if (entry.shareButton) {
@@ -1585,41 +1698,28 @@ function shareSlide(entryIndex = currentSlideIndex()) {
 		storyCanvas.height = targetHeight;
 		const ctx = storyCanvas.getContext("2d");
 
-		// Fill with gradient background matching slide theme
-		const gradient = ctx.createLinearGradient(0, 0, 0, targetHeight);
-		gradient.addColorStop(0, "#0f172a");
-		gradient.addColorStop(0.6, "#020617");
-		gradient.addColorStop(1, "#000000");
-		ctx.fillStyle = gradient;
-		ctx.fillRect(0, 0, targetWidth, targetHeight);
-
-		// Scale to fill the Instagram story canvas completely
-		const padding = 30;
-		const availableWidth = targetWidth - padding * 2;
-		const availableHeight = targetHeight - padding * 2;
-
 		// Calculate aspect ratios
 		const canvasRatio = originalCanvas.width / originalCanvas.height;
-		const storyRatio = availableWidth / availableHeight;
+		const storyRatio = targetWidth / targetHeight;
 
 		let scaledWidth, scaledHeight;
+		let x = 0;
+		let y = 0;
 
-		// If canvas is wider than story aspect ratio, fit to height
-		// This ensures vertical filling which is key for Instagram stories
+		// Scale to fill the entire Instagram story canvas (cover mode)
 		if (canvasRatio > storyRatio) {
-			scaledHeight = availableHeight;
+			// Canvas is wider - fit to height and crop sides
+			scaledHeight = targetHeight;
 			scaledWidth = scaledHeight * canvasRatio;
+			x = (targetWidth - scaledWidth) / 2;
 		} else {
-			// If canvas is taller, fit to width
-			scaledWidth = availableWidth;
+			// Canvas is taller - fit to width and crop top/bottom
+			scaledWidth = targetWidth;
 			scaledHeight = scaledWidth / canvasRatio;
+			y = (targetHeight - scaledHeight) / 2;
 		}
 
-		// Center the content
-		const x = (targetWidth - scaledWidth) / 2;
-		const y = (targetHeight - scaledHeight) / 2;
-
-		// Draw the slide centered
+		// Draw the slide scaled to fill the canvas with its own background
 		ctx.drawImage(originalCanvas, x, y, scaledWidth, scaledHeight);
 
 		storyCanvas.toBlob((blob) => {
