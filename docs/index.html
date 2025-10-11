@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+
+
+
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2DDRP47X9B"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-2DDRP47X9B');
+    </script>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ChatRecap</title>
@@ -15,12 +29,15 @@
         <div class="copy">
           <h1>ChatRecap</h1>
           <p>
-            Drop your exported ChatGPT <code>conversations.json</code> file to get a shareable recap directly in your browser.
+            Upload your exported ChatGPT <code>conversations.json</code> file to get a your recap.
           </p>
-          <label class="upload" id="upload-label">
-            <input type="file" id="file-input" accept="application/json" />
-            <span>Select conversations.json</span>
-          </label>
+          <div class="button-group">
+            <label class="upload" id="upload-label">
+              <input type="file" id="file-input" accept="application/json" />
+              <span>Select File</span>
+            </label>
+            <button id="try-demo-btn" class="demo-btn">✨ Try Demo</button>
+          </div>
           <button id="demo-trigger" class="ghost-link">How to export your data</button>
           <p class="hint">Your data never leaves this page. Everything runs locally.</p>
 

@@ -5,9 +5,56 @@ const state = {
 	chartDefaultsSet: false,
 };
 
+// Embedded demo data (no network request needed!)
+const DEMO_DATA = {
+	context: {
+		first_date: "Mar 10, 2024",
+		last_date: "Oct 08, 2025",
+		conversation_count: "1,362",
+		message_count: "22,287",
+		active_days: "484",
+		avg_messages_per_active_day: "40.5",
+		peak_month_label: "Sep 2025",
+		peak_month_value: "2,852",
+		busiest_day_label: "2025-07-25",
+		busiest_day_value: "390",
+		longest_streak_length: "7",
+		longest_streak_range: "Sample range",
+		longest_gap_length: "3",
+		longest_gap_range: "Sample gap",
+		assistant_share: "45.8%",
+		user_share: "30.7%",
+		deep_share: "44.3%",
+		short_share: "49.3%",
+		one_share: "6.5%",
+		tool_share: "15.0%",
+		code_share: "25.0%",
+		top_conversation_title: "Long conversation",
+		top_conversation_messages: "392",
+		assistant_peak_label: "Aug 2024",
+		assistant_peak_words: "409.1",
+		assistant_low_label: "—",
+		assistant_low_words: "—",
+		latest_word_avg: "250",
+		latest_char_avg: "1,250",
+		peak_hour_label: "14:00",
+		peak_hour_messages: "1,785",
+		daypart_split: "Day 65.0% • Night 35.0%",
+		night_share: "Late night 15.0% after 10pm",
+		peak_weekday_label: "Mon",
+		peak_weekday_messages: "3,554",
+		low_weekday_label: "Sat",
+		low_weekday_messages: "1,578",
+		quiet_month_label: "—",
+		quiet_month_value: "—",
+	},
+	chartData: {},
+};
+
 const fileInput = document.getElementById("file-input");
 const uploadLabel = document.getElementById("upload-label");
 const demoTrigger = document.getElementById("demo-trigger");
+const tryDemoBtn = document.getElementById("try-demo-btn");
 const demoContainer = document.getElementById("demo-container");
 const demoVideo = document.getElementById("demo-video");
 const closeDemo = document.getElementById("close-demo");
@@ -21,6 +68,13 @@ if (demoTrigger) {
 	demoTrigger.addEventListener("click", (event) => {
 		event.preventDefault();
 		toggleDemoPreview();
+	});
+}
+
+if (tryDemoBtn) {
+	tryDemoBtn.addEventListener("click", (event) => {
+		event.preventDefault();
+		loadDemoData();
 	});
 }
 
@@ -71,6 +125,38 @@ fileInput.addEventListener("change", async (event) => {
 		);
 	}
 });
+
+function loadDemoData() {
+	closeDemoPreview();
+	resetUI();
+
+	try {
+		setLoading(true);
+
+		// Use embedded demo data - no network request needed!
+		const analysis = DEMO_DATA;
+		if (!analysis || !analysis.context) {
+			throw new Error("Demo data format is invalid");
+		}
+
+		storyContainer.classList.remove("hidden");
+		renderStory(analysis, true); // true = demo mode
+		setLoading(false);
+
+		// Scroll to story
+		setTimeout(() => {
+			storyContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+		}, 100);
+	} catch (error) {
+		console.error(error);
+		setLoading(false);
+		showError(
+			error instanceof Error
+				? error.message
+				: "Failed to load demo. Please try uploading your own data instead."
+		);
+	}
+}
 
 function openDemoPreview() {
 	if (!demoContainer || !demoVideo) return;
@@ -930,9 +1016,10 @@ function monthToDate(key) {
 	return new Date(Date.UTC(year, month - 1, 1));
 }
 
-function renderStory({ context, chartData }) {
+function renderStory({ context, chartData }, isDemo = false) {
 	destroyCharts();
 	state.slides = [];
+	state.isDemo = isDemo;
 	storyRail.innerHTML = "";
 	storyProgress.innerHTML = "";
 
@@ -968,7 +1055,7 @@ function renderStory({ context, chartData }) {
 				},
 			],
 			chart: null,
-			footer: "Swipe or tap to keep the vibe • gpt-recap",
+			footer: "Swipe or tap to keep the vibe",
 		},
 		{
 			tag: "Collab energy",
@@ -1094,6 +1181,36 @@ function renderStory({ context, chartData }) {
 			footer: `Last update: ${context.last_date}`,
 		},
 		{
+			tag: "Monthly trends",
+			title: "Your evolution over time",
+			body: "How your ChatGPT journey grew month by month.",
+			highlights: [
+				{
+					icon: "💬",
+					label: "Total messages",
+					value: context.message_count,
+					detail: `${context.conversation_count} conversations`,
+				},
+				{
+					icon: "📈",
+					label: "Peak month",
+					value: context.peak_month_label,
+					detail:
+						context.peak_month_value === "—"
+							? "—"
+							: `${context.peak_month_value} messages`,
+				},
+				{
+					icon: "📊",
+					label: "Daily average",
+					value: context.avg_messages_per_active_day,
+					detail: `Across ${context.active_days} active days`,
+				},
+			],
+			chart: null,
+			footer: "Watch the momentum build.",
+		},
+		{
 			tag: "Weekly cadence",
 			title: "Where the buzz lands",
 			body: "Days of the week GPT shows up with you.",
@@ -1147,11 +1264,110 @@ function renderStory({ context, chartData }) {
 
 	if (!renderStory.initialised) {
 		storyRail.addEventListener("scroll", onRailScroll, { passive: true });
+		initTouchGestures();
 		renderStory.initialised = true;
 	}
 
 	storyRail.scrollTop = 0;
 	updateDots(0);
+}
+
+function initTouchGestures() {
+	let touchStartY = 0;
+	let touchStartX = 0;
+	let touchStartTime = 0;
+	let isSwiping = false;
+	let hasMoved = false;
+
+	storyRail.addEventListener(
+		"touchstart",
+		(e) => {
+			touchStartY = e.touches[0].clientY;
+			touchStartX = e.touches[0].clientX;
+			touchStartTime = Date.now();
+			isSwiping = false;
+			hasMoved = false;
+		},
+		{ passive: true }
+	);
+
+	storyRail.addEventListener(
+		"touchmove",
+		(e) => {
+			const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+			const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
+
+			if (deltaY > 5 || deltaX > 5) {
+				hasMoved = true;
+			}
+
+			if (!isSwiping) {
+				// Only track as swipe if vertical movement is dominant
+				if (deltaY > 10 && deltaY > deltaX * 1.5) {
+					isSwiping = true;
+				}
+			}
+		},
+		{ passive: true }
+	);
+
+	storyRail.addEventListener(
+		"touchend",
+		(e) => {
+			const touchEndY = e.changedTouches[0].clientY;
+			const touchEndX = e.changedTouches[0].clientX;
+			const touchEndTime = Date.now();
+			const deltaY = touchStartY - touchEndY;
+			const deltaTime = touchEndTime - touchStartTime;
+			const velocity = Math.abs(deltaY) / deltaTime;
+
+			// Handle swipe gestures
+			if (isSwiping) {
+				// Snap to next/previous slide if swipe is significant enough
+				if (Math.abs(deltaY) > 50 || velocity > 0.5) {
+					const currentIndex = currentSlideIndex();
+					let targetIndex = currentIndex;
+
+					if (deltaY > 0 && currentIndex < state.slides.length - 1) {
+						// Swipe up -> next slide
+						targetIndex = currentIndex + 1;
+					} else if (deltaY < 0 && currentIndex > 0) {
+						// Swipe down -> previous slide
+						targetIndex = currentIndex - 1;
+					}
+
+					if (targetIndex !== currentIndex) {
+						scrollToSlide(targetIndex);
+					}
+				}
+			} else if (!hasMoved && deltaTime < 300) {
+				// Handle tap navigation (like Instagram stories)
+				// Only on mobile devices
+				if (window.innerWidth <= 540) {
+					const currentIndex = currentSlideIndex();
+					const railRect = storyRail.getBoundingClientRect();
+					const tapX = touchEndX - railRect.left;
+					const railWidth = railRect.width;
+
+					// Tap on left third -> previous slide
+					// Tap on right third -> next slide
+					// Middle third -> no action (for interacting with content)
+					if (tapX < railWidth * 0.3 && currentIndex > 0) {
+						scrollToSlide(currentIndex - 1);
+					} else if (
+						tapX > railWidth * 0.7 &&
+						currentIndex < state.slides.length - 1
+					) {
+						scrollToSlide(currentIndex + 1);
+					}
+				}
+			}
+
+			isSwiping = false;
+			hasMoved = false;
+		},
+		{ passive: true }
+	);
 }
 
 function createSlide(definition, index) {
@@ -1165,6 +1381,14 @@ function createSlide(definition, index) {
 
 	const wrapper = document.createElement("div");
 	wrapper.className = "content";
+
+	// Add demo indicator badge on first slide
+	if (state.isDemo && index === 0) {
+		const demoBadge = document.createElement("span");
+		demoBadge.className = "demo-badge";
+		demoBadge.textContent = "Demo Preview";
+		slide.appendChild(demoBadge);
+	}
 
 	const tagEl = document.createElement("span");
 	tagEl.className = "tag";
@@ -1321,39 +1545,116 @@ function scrollToSlide(idx) {
 function shareSlide(entryIndex = currentSlideIndex()) {
 	const entry = state.slides[entryIndex];
 	if (!entry) return;
+
+	// Hide share button during capture
 	if (entry.shareButton) {
 		entry.shareButton.classList.add("hide-capturing");
 	}
-	html2canvas(entry.element, { backgroundColor: null, scale: 3 }).then(
-		(canvas) => {
-			if (entry.shareButton) {
-				entry.shareButton.classList.remove("hide-capturing");
-			}
-			canvas.toBlob((blob) => {
-				if (!blob) return;
-				const index = state.slides.indexOf(entry) + 1;
-				const fileName = `gpt-recap-slide-${index}.png`;
-				if (
-					navigator.canShare &&
-					navigator.canShare({
-						files: [new File([blob], fileName, { type: "image/png" })],
-					})
-				) {
-					const file = new File([blob], fileName, { type: "image/png" });
-					navigator
-						.share({
-							files: [file],
-							title: "GPT Recap",
-							text: "My ChatGPT recap",
-						})
-						.catch(() => downloadBlob(blob, fileName));
-				} else {
-					downloadBlob(blob, fileName);
-					alert("Slide saved as PNG. Share it manually on your story.");
-				}
-			}, "image/png");
+
+	// Hide demo badge during capture if it exists
+	const demoBadge = entry.element.querySelector(".demo-badge");
+	if (demoBadge) {
+		demoBadge.classList.add("hide-capturing");
+	}
+
+	// Instagram story dimensions: 1080x1920 (9:16 aspect ratio)
+	const targetWidth = 1080;
+	const targetHeight = 1920;
+
+	html2canvas(entry.element, {
+		backgroundColor: null,
+		scale: 2,
+		width: entry.element.scrollWidth,
+		height: entry.element.scrollHeight,
+		windowWidth: entry.element.scrollWidth,
+		windowHeight: entry.element.scrollHeight,
+	}).then((originalCanvas) => {
+		// Restore share button
+		if (entry.shareButton) {
+			entry.shareButton.classList.remove("hide-capturing");
 		}
-	);
+
+		// Restore demo badge
+		if (demoBadge) {
+			demoBadge.classList.remove("hide-capturing");
+		}
+
+		// Create a new canvas with Instagram story dimensions
+		const storyCanvas = document.createElement("canvas");
+		storyCanvas.width = targetWidth;
+		storyCanvas.height = targetHeight;
+		const ctx = storyCanvas.getContext("2d");
+
+		// Fill with gradient background matching slide theme
+		const gradient = ctx.createLinearGradient(0, 0, 0, targetHeight);
+		gradient.addColorStop(0, "#0f172a");
+		gradient.addColorStop(0.6, "#020617");
+		gradient.addColorStop(1, "#000000");
+		ctx.fillStyle = gradient;
+		ctx.fillRect(0, 0, targetWidth, targetHeight);
+
+		// Scale to fill the Instagram story canvas completely
+		const padding = 30;
+		const availableWidth = targetWidth - padding * 2;
+		const availableHeight = targetHeight - padding * 2;
+
+		// Calculate aspect ratios
+		const canvasRatio = originalCanvas.width / originalCanvas.height;
+		const storyRatio = availableWidth / availableHeight;
+
+		let scaledWidth, scaledHeight;
+
+		// If canvas is wider than story aspect ratio, fit to height
+		// This ensures vertical filling which is key for Instagram stories
+		if (canvasRatio > storyRatio) {
+			scaledHeight = availableHeight;
+			scaledWidth = scaledHeight * canvasRatio;
+		} else {
+			// If canvas is taller, fit to width
+			scaledWidth = availableWidth;
+			scaledHeight = scaledWidth / canvasRatio;
+		}
+
+		// Center the content
+		const x = (targetWidth - scaledWidth) / 2;
+		const y = (targetHeight - scaledHeight) / 2;
+
+		// Draw the slide centered
+		ctx.drawImage(originalCanvas, x, y, scaledWidth, scaledHeight);
+
+		storyCanvas.toBlob((blob) => {
+			if (!blob) return;
+			const index = state.slides.indexOf(entry) + 1;
+			const fileName = `chatrecap-story-${index}.png`;
+			if (
+				navigator.canShare &&
+				navigator.canShare({
+					files: [new File([blob], fileName, { type: "image/png" })],
+				})
+			) {
+				const file = new File([blob], fileName, { type: "image/png" });
+				navigator
+					.share({
+						files: [file],
+						title: "ChatRecap",
+						text: "My ChatGPT recap ✨",
+					})
+					.catch(() => downloadBlob(blob, fileName));
+			} else {
+				downloadBlob(blob, fileName);
+				const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+				if (isMobile) {
+					alert(
+						"Story saved! Optimized for Instagram (1080x1920). Upload to your story from your gallery."
+					);
+				} else {
+					alert(
+						"Slide saved as Instagram story format (1080x1920). Share it on your story!"
+					);
+				}
+			}
+		}, "image/png");
+	});
 }
 
 function downloadBlob(blob, fileName) {
