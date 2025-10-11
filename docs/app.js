@@ -476,6 +476,14 @@ function buildContext({
 		latest_char_avg: latestRollingChars
 			? formatInteger(Math.round(latestRollingChars))
 			: "—",
+		peak_hour_label: computePeakHourLabel(hourCounts),
+		peak_hour_messages: formatInteger(getPeakHourMessages(hourCounts)),
+		daypart_split: computeDaypartSplit(hourCounts),
+		night_share: computeNightShare(hourCounts),
+		peak_weekday_label: computePeakWeekdayLabel(weekdayCounts),
+		peak_weekday_messages: formatInteger(getPeakWeekdayMessages(weekdayCounts)),
+		low_weekday_label: computeLowWeekdayLabel(weekdayCounts),
+		low_weekday_messages: formatInteger(getLowWeekdayMessages(weekdayCounts)),
 	};
 
 	return { context, chartData };
@@ -710,6 +718,84 @@ function computeShare(map, role) {
 	return formatPercent((map.get(role) || 0) / total);
 }
 
+function computePeakHourLabel(hourCounts) {
+	if (!Array.isArray(hourCounts) || !hourCounts.length) return "—";
+	const peak = Math.max(...hourCounts);
+	if (!Number.isFinite(peak) || peak <= 0) return "—";
+	const hour = hourCounts.indexOf(peak);
+	return `${hour.toString().padStart(2, "0")}:00`;
+}
+
+function getPeakHourMessages(hourCounts) {
+	if (!Array.isArray(hourCounts) || !hourCounts.length) return null;
+	const peak = Math.max(...hourCounts);
+	return peak > 0 && Number.isFinite(peak) ? peak : null;
+}
+
+function computeDaypartSplit(hourCounts) {
+	if (!Array.isArray(hourCounts) || !hourCounts.length) return "—";
+	const total = hourCounts.reduce((sum, val) => sum + val, 0);
+	if (!total) return "—";
+	const day = hourCounts.reduce(
+		(sum, val, idx) => sum + (idx >= 6 && idx < 18 ? val : 0),
+		0
+	);
+	const night = total - day;
+	return `Day ${formatPercent(day / total)} • Night ${formatPercent(
+		night / total
+	)}`;
+}
+
+function computeNightShare(hourCounts) {
+	if (!Array.isArray(hourCounts) || !hourCounts.length) return "—";
+	const total = hourCounts.reduce((sum, val) => sum + val, 0);
+	if (!total) return "—";
+	const lateNight = hourCounts.reduce(
+		(sum, val, idx) => sum + (idx >= 22 || idx < 5 ? val : 0),
+		0
+	);
+	return `Late night ${formatPercent(lateNight / total)} after 10pm`;
+}
+
+function computePeakWeekdayLabel(weekdayCounts) {
+	if (!Array.isArray(weekdayCounts) || !weekdayCounts.length) return "—";
+	const peak = Math.max(...weekdayCounts);
+	if (!Number.isFinite(peak) || peak <= 0) return "—";
+	const idx = weekdayCounts.indexOf(peak);
+	return weekdayLabel(idx);
+}
+
+function getPeakWeekdayMessages(weekdayCounts) {
+	if (!Array.isArray(weekdayCounts) || !weekdayCounts.length) return null;
+	const peak = Math.max(...weekdayCounts);
+	return peak > 0 && Number.isFinite(peak) ? peak : null;
+}
+
+function computeLowWeekdayLabel(weekdayCounts) {
+	if (!Array.isArray(weekdayCounts) || !weekdayCounts.length) return "—";
+	let minVal = Infinity;
+	let minIdx = -1;
+	weekdayCounts.forEach((val, idx) => {
+		if (val > 0 && val < minVal) {
+			minVal = val;
+			minIdx = idx;
+		}
+	});
+	if (minIdx === -1 || !Number.isFinite(minVal)) return "—";
+	return weekdayLabel(minIdx);
+}
+
+function getLowWeekdayMessages(weekdayCounts) {
+	if (!Array.isArray(weekdayCounts) || !weekdayCounts.length) return null;
+	let minVal = Infinity;
+	weekdayCounts.forEach((val) => {
+		if (val > 0 && val < minVal) {
+			minVal = val;
+		}
+	});
+	return minVal !== Infinity && Number.isFinite(minVal) ? minVal : null;
+}
+
 function computeRollingAverage(values, window) {
 	if (!values.length) return null;
 	const slice = values.slice(-window);
@@ -852,25 +938,33 @@ function renderStory({ context, chartData }) {
 
 	const slides = [
 		{
-			tag: "Recap",
+			tag: "Snapshot",
 			title: `${context.first_date} → ${context.last_date}`,
-			body: `${context.conversation_count} conversations • ${context.message_count} messages • ${context.active_days} active days. Avg ${context.avg_messages_per_active_day} messages when you checked in.`,
-			stats: [
+			body: "Your ChatGPT habit in one screen.",
+			highlights: [
 				{
-					label: `Peak month — ${context.peak_month_label}`,
-					value: context.peak_month_value,
+					icon: "💬",
+					label: "Messages",
+					value: context.message_count,
+					detail: `${context.conversation_count} chats total`,
 				},
 				{
-					label: `Quiet month — ${context.quiet_month_label}`,
-					value: context.quiet_month_value,
+					icon: "📆",
+					label: "Active days",
+					value: context.active_days,
+					detail:
+						context.busiest_day_label === "—"
+							? "No standout day yet"
+							: `Peak ${context.busiest_day_label}`,
 				},
 				{
-					label: `Busiest day — ${context.busiest_day_label}`,
-					value: context.busiest_day_value,
-				},
-				{
-					label: `Longest streak — ${context.longest_streak_range}`,
-					value: context.longest_streak_length,
+					icon: "🔥",
+					label: "Longest streak",
+					value:
+						context.longest_streak_length === "—"
+							? "—"
+							: `${context.longest_streak_length} days`,
+					detail: context.longest_streak_range,
 				},
 			],
 			chart: null,
@@ -879,57 +973,150 @@ function renderStory({ context, chartData }) {
 		{
 			tag: "Collab energy",
 			title: "Who drives the chat?",
-			body: `Assistant ${context.assistant_share} • You ${context.user_share} • Tools in ${context.tool_share} of sessions • Code in ${context.code_share}.`,
-			stats: [
-				{ label: "Deep dives", value: context.deep_share },
-				{ label: "Quick loops", value: context.short_share },
-				{ label: "One & done", value: context.one_share },
+			body: "How you and the assistant share the mic.",
+			highlights: [
 				{
-					label: `Biggest convo: ${context.top_conversation_title}`,
-					value: context.top_conversation_messages,
+					icon: "🤖",
+					label: "Assistant share",
+					value: context.assistant_share,
+					detail: `You ${context.user_share}`,
+				},
+				{
+					icon: "🛠️",
+					label: "Tool boosts",
+					value: context.tool_share,
+					detail: `${context.code_share} code moments`,
+				},
+				{
+					icon: "⚡️",
+					label: "Deep dives",
+					value: context.deep_share,
+					detail: `${context.short_share} quick loops`,
 				},
 			],
-			chart: chartData.monthlyRole,
+			chart: null,
 			footer: "Tag who owes the next prompt.",
 		},
 		{
 			tag: "Momentum",
 			title: "Streaks & pauses",
-			body: `Longest streak ${context.longest_streak_length} days (${context.longest_streak_range}). Longest pause ${context.longest_gap_length} days (${context.longest_gap_range}).`,
-			stats: [
+			body: "Celebrate the grind and the reset days.",
+			highlights: [
 				{
-					label: `Messages on ${context.busiest_day_label}`,
-					value: context.busiest_day_value,
+					icon: "🚀",
+					label: "Longest streak",
+					value:
+						context.longest_streak_length === "—"
+							? "—"
+							: `${context.longest_streak_length} days`,
+					detail: context.longest_streak_range,
 				},
 				{
-					label: `Wordiest month — ${context.assistant_peak_label}`,
-					value: context.assistant_peak_words,
+					icon: "🧘",
+					label: "Longest pause",
+					value:
+						context.longest_gap_length === "—"
+							? "—"
+							: `${context.longest_gap_length} days`,
+					detail: context.longest_gap_range,
+				},
+				{
+					icon: "🏆",
+					label: "Biggest convo",
+					value: context.top_conversation_messages,
+					detail: context.top_conversation_title,
 				},
 			],
-			chart: chartData.cumulativeMessages,
+			chart: null,
 			footer: "Proof you kept building.",
 		},
 		{
 			tag: "Reply craft",
 			title: "Length of the assists",
-			body: `Peaks reached ${context.assistant_peak_words} words (${context.assistant_peak_label}). Low tide ${context.assistant_low_words} (${context.assistant_low_label}). Latest 30-day avg ${context.latest_word_avg} words / ${context.latest_char_avg} characters.`,
-			stats: null,
-			chart: chartData.assistantTrend,
+			body: "How long the assistant runs with your ideas.",
+			highlights: [
+				{
+					icon: "✍️",
+					label: "Peak reply",
+					value:
+						context.assistant_peak_words === "—"
+							? "—"
+							: `${context.assistant_peak_words} words`,
+					detail: context.assistant_peak_label,
+				},
+				{
+					icon: "⚡",
+					label: "Shortest",
+					value:
+						context.assistant_low_words === "—"
+							? "—"
+							: `${context.assistant_low_words} words`,
+					detail: context.assistant_low_label,
+				},
+				{
+					icon: "📊",
+					label: "Recent avg",
+					value:
+						context.latest_word_avg === "—"
+							? "—"
+							: `${context.latest_word_avg} words`,
+					detail:
+						context.latest_char_avg === "—"
+							? "—"
+							: `${context.latest_char_avg} chars`,
+				},
+			],
+			chart: null,
 			footer: "Keep the bars flowing.",
 		},
 		{
 			tag: "When it happens",
 			title: "Your prime hours",
-			body: "Mornings → afternoons carried the energy, with late-night check-ins after dark. Screenshot and drop it in your story.",
-			stats: null,
+			body: "Top times you're chatting with GPT.",
+			highlights: [
+				{
+					icon: "⏰",
+					label: "Most active hour",
+					value: context.peak_hour_label,
+					detail:
+						context.peak_hour_messages === "—"
+							? "No activity yet"
+							: `${context.peak_hour_messages} messages`,
+				},
+				{
+					icon: "🌗",
+					label: "Day split",
+					value: context.daypart_split,
+					detail: context.night_share,
+				},
+			],
 			chart: chartData.hourlyActivity,
 			footer: `Last update: ${context.last_date}`,
 		},
 		{
 			tag: "Weekly cadence",
 			title: "Where the buzz lands",
-			body: "A quick read on which days GPT had your back the most.",
-			stats: null,
+			body: "Days of the week GPT shows up with you.",
+			highlights: [
+				{
+					icon: "🏅",
+					label: "Weekly MVP",
+					value: context.peak_weekday_label,
+					detail:
+						context.peak_weekday_messages === "—"
+							? "No activity yet"
+							: `${context.peak_weekday_messages} messages`,
+				},
+				{
+					icon: "😴",
+					label: "Chill day",
+					value: context.low_weekday_label,
+					detail:
+						context.low_weekday_messages === "—"
+							? "—"
+							: `${context.low_weekday_messages} messages`,
+				},
+			],
 			chart: chartData.weekdayActivity,
 			footer: "Share your grind with the crew.",
 		},
@@ -1010,18 +1197,54 @@ function createSlide(definition, index) {
 	}
 
 	let canvas = null;
+	let chartSection = null;
 	if (definition.chart) {
+		chartSection = document.createElement("div");
+		chartSection.className = "chart-insights";
+
 		const chartWrap = document.createElement("div");
 		chartWrap.className = "visual";
 		canvas = document.createElement("canvas");
 		chartWrap.appendChild(canvas);
-		wrapper.appendChild(chartWrap);
+		chartSection.appendChild(chartWrap);
+		wrapper.appendChild(chartSection);
+		slide.classList.add("chart-slide");
+	}
+
+	if (definition.highlights?.length) {
+		const highlightsEl = document.createElement("div");
+		highlightsEl.className = "highlights";
+		definition.highlights.forEach((item) => {
+			const card = document.createElement("div");
+			card.className = "highlight";
+			if (item.icon) {
+				const icon = document.createElement("span");
+				icon.className = "emoji";
+				icon.textContent = item.icon;
+				card.appendChild(icon);
+			}
+			const value = document.createElement("span");
+			value.className = "value";
+			value.textContent = item.value;
+			const label = document.createElement("span");
+			label.className = "label";
+			label.textContent = item.label;
+			card.append(value, label);
+			if (item.detail) {
+				const detail = document.createElement("span");
+				detail.className = "detail";
+				detail.textContent = item.detail;
+				card.appendChild(detail);
+			}
+			highlightsEl.appendChild(card);
+		});
+		(chartSection ?? wrapper).appendChild(highlightsEl);
 	}
 
 	const shareButton = document.createElement("button");
 	shareButton.type = "button";
 	shareButton.className = "action share floating-share";
-	shareButton.textContent = "Share this slide";
+	shareButton.textContent = "Share";
 
 	wrapper.appendChild(shareButton);
 

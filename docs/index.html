@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GPT Recap</title>
+    <title>ChatRecap</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,9 +13,9 @@
     <main>
             <section class="hero">
         <div class="copy">
-          <h1>GPT Recap</h1>
+          <h1>ChatRecap</h1>
           <p>
-            Drop your exported <code>conversations.json</code> file to get a shareable recap directly in your browser.
+            Drop your exported ChatGPT <code>conversations.json</code> file to get a shareable recap directly in your browser.
           </p>
           <label class="upload" id="upload-label">
             <input type="file" id="file-input" accept="application/json" />
@@ -23,6 +23,10 @@
           </label>
           <button id="demo-trigger" class="ghost-link">How to export your data</button>
           <p class="hint">Your data never leaves this page. Everything runs locally.</p>
+
+            <a class="hint" href="https://github.com/eonurk/gpt-recap" target="_blank" rel="noopener">
+              View source code ❤️
+            </a>
         </div>
       </section>
 
@@ -45,11 +49,7 @@
 
       <section id="story-container" class="story-container hidden">
         <header class="story-toolbar">
-          <div class="actions">
-            <a class="hint" href="https://github.com/eonurk/gpt-recap" target="_blank" rel="noopener">
-              View source code
-            </a>
-          </div>
+          
         </header>
         <div id="story-rail" class="story-rail"></div>
         <div id="story-progress" class="story-progress"></div>

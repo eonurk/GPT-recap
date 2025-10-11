@@ -283,8 +283,9 @@ code {
 .action.share {
 	background: linear-gradient(135deg, #7c3aed 0%, #fb7185 100%);
 	border: 1px solid rgba(248, 113, 113, 0.55);
-	color: #0b1220;
-	font-weight: 700;
+	font-size: 0.72rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
 	box-shadow: 0 12px 32px rgba(248, 113, 113, 0.35);
 }
 
@@ -350,14 +351,77 @@ code {
 	font-size: clamp(1.8rem, 4.2vw, 2.4rem);
 }
 
+.chart-slide {
+	min-height: auto;
+	max-height: clamp(560px, 66vh, 640px);
+	padding: clamp(12px, 3.2vw, 24px) clamp(14px, 3.6vw, 36px)
+		clamp(18px, 4vw, 36px);
+	gap: clamp(10px, 2vw, 20px);
+}
+
+.chart-slide .chart-insights {
+	display: grid;
+	grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+	gap: clamp(8px, 1.6vw, 16px);
+	align-items: start;
+	width: 100%;
+}
+
+.chart-slide .visual {
+	max-height: clamp(160px, 26vh, 220px);
+	padding: clamp(4px, 0.8vh, 8px) 0;
+}
+
+.chart-slide footer {
+	margin-top: clamp(4px, 0.8vh, 12px);
+}
+
+.chart-slide .chart-insights .highlights {
+	grid-template-columns: repeat(1, minmax(0, 1fr));
+	gap: clamp(4px, 0.8vw, 10px);
+}
+
+.chart-slide .highlights {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: clamp(5px, 0.9vw, 10px);
+}
+
+.chart-slide .highlight {
+	padding: clamp(5px, 1.2vw, 10px);
+	gap: 2px;
+}
+
+.chart-slide .highlight .emoji {
+	font-size: clamp(0.72rem, 1.3vw, 0.98rem);
+}
+
+.chart-slide .highlight .value {
+	font-size: clamp(0.82rem, 1.4vw, 1.08rem);
+}
+
+.chart-slide .highlight .label {
+	font-size: 0.55rem;
+}
+
+.chart-slide .highlight .detail {
+	font-size: 0.66rem;
+}
+
+.chart-slide h2 {
+	font-size: clamp(1.5rem, 3.4vw, 2rem);
+}
+
+.chart-slide p {
+	font-size: clamp(0.82rem, 1.5vw, 0.96rem);
+	line-height: 1.35;
+}
+
 .slide::after {
 	content: "chatrecap.co";
 	position: absolute;
 	bottom: clamp(18px, 3.5vw, 40px);
 	right: clamp(20px, 4vw, 48px);
 	font-size: clamp(0.65rem, 0.55rem + 0.35vw, 0.92rem);
-	letter-spacing: 0.18em;
-	text-transform: uppercase;
 	color: rgba(148, 163, 184, 0.28);
 	pointer-events: none;
 	user-select: none;
@@ -423,6 +487,47 @@ code {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 14px;
+}
+
+.highlights {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: clamp(12px, 2vw, 18px);
+}
+
+.highlight {
+	background: rgba(15, 23, 42, 0.4);
+	border-radius: 20px;
+	padding: clamp(12px, 2.8vw, 20px);
+	border: 1px solid rgba(148, 163, 184, 0.2);
+	box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.08);
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	position: relative;
+}
+
+.highlight .emoji {
+	font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+	margin-bottom: 4px;
+}
+
+.highlight .value {
+	font-size: clamp(1.35rem, 2.8vw, 1.85rem);
+	font-weight: 700;
+	color: #f1f5f9;
+}
+
+.highlight .label {
+	font-size: 0.72rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: rgba(203, 213, 225, 0.75);
+}
+
+.highlight .detail {
+	font-size: 0.85rem;
+	color: rgba(148, 163, 184, 0.7);
 }
 
 .stat {
@@ -558,9 +663,9 @@ code {
 
 .floating-share {
 	position: absolute;
-	bottom: 0px;
-	left: 20px;
-	padding: 10px 22px;
+	top: 0;
+	right: clamp(10px, 2.8vw, 24px);
+	padding: 8px 12px;
 	border-radius: 999px;
 	width: auto;
 	max-width: none;
@@ -593,6 +698,10 @@ code {
 	}
 
 	.stats {
+		grid-template-columns: repeat(1, minmax(0, 1fr));
+	}
+
+	.highlights {
 		grid-template-columns: repeat(1, minmax(0, 1fr));
 	}
 
