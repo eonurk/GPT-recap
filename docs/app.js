@@ -760,7 +760,7 @@ function renderStory({ context, chartData }) {
   slides.forEach((definition, idx) => {
     const { element, canvas, shareButton } = createSlide(definition, idx);
     storyRail.appendChild(element);
-    state.slides.push({ element, canvas, chartConfig: definition.chart });
+    state.slides.push({ element, canvas, chartConfig: definition.chart, shareButton });
     if (shareButton) {
       shareButton.addEventListener('click', () => shareSlide(idx));
     }
@@ -840,13 +840,14 @@ function createSlide(definition, index) {
   shareButton.className = 'action share floating-share';
   shareButton.textContent = 'Share this slide';
 
+  wrapper.appendChild(shareButton);
+
   if (definition.footer) {
     const footer = document.createElement('footer');
     footer.textContent = definition.footer;
     wrapper.appendChild(footer);
   }
 
-  wrapper.appendChild(shareButton);
   slide.appendChild(wrapper);
   return { element: slide, canvas, shareButton };
 }
@@ -910,7 +911,13 @@ function scrollToSlide(idx) {
 function shareSlide(entryIndex = currentSlideIndex()) {
   const entry = state.slides[entryIndex];
   if (!entry) return;
+  if (entry.shareButton) {
+    entry.shareButton.classList.add('hide-capturing');
+  }
   html2canvas(entry.element, { backgroundColor: null, scale: 3 }).then((canvas) => {
+    if (entry.shareButton) {
+      entry.shareButton.classList.remove('hide-capturing');
+    }
     canvas.toBlob((blob) => {
       if (!blob) return;
       const index = state.slides.indexOf(entry) + 1;
