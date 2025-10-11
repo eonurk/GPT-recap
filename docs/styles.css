@@ -157,7 +157,6 @@ code {
 	width: calc(100% - 32px);
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
 }
 
 .phone-frame {
@@ -169,35 +168,10 @@ code {
 	);
 	border-radius: 42px;
 	border: 3px solid rgba(148, 163, 184, 0.25);
-	padding: clamp(12px, 2.8vw, 18px);
 	max-width: min(320px, 100%);
 	margin: 0 auto;
 	box-shadow: inset 0 0 0 3px rgba(15, 23, 42, 0.85);
 	overflow: hidden;
-}
-
-.phone-frame::before {
-	content: "";
-	position: absolute;
-	top: clamp(6px, 2vw, 12px);
-	left: 50%;
-	transform: translateX(-50%);
-	width: 34%;
-	height: 8px;
-	border-radius: 0 0 999px 999px;
-	background: rgba(30, 41, 59, 0.8);
-}
-
-.phone-frame::after {
-	content: "";
-	position: absolute;
-	bottom: clamp(10px, 3vw, 16px);
-	left: 50%;
-	transform: translateX(-50%);
-	width: 34%;
-	height: 5px;
-	border-radius: 999px;
-	background: rgba(148, 163, 184, 0.18);
 }
 
 .demo video {
@@ -343,6 +317,7 @@ code {
 	width: min(1080px, calc(100% - clamp(32px, 6vw, 120px)));
 	margin: 0 auto clamp(28px, 5vh, 52px);
 	min-height: clamp(560px, 70vh, 760px);
+	max-height: clamp(860px, 90vh, 980px);
 	scroll-snap-align: center;
 	border-radius: 32px;
 	padding: clamp(32px, 5.5vw, 60px) clamp(28px, 5vw, 64px)
@@ -355,6 +330,24 @@ code {
 	border: 1px solid rgba(148, 163, 184, 0.18);
 	box-shadow: 0 28px 70px rgba(8, 7, 15, 0.75);
 	color: #f8fafc;
+}
+
+.slide:nth-of-type(-n + 3) {
+	padding: clamp(28px, 5vw, 52px) clamp(24px, 4.5vw, 58px)
+		clamp(54px, 6.5vw, 88px);
+	gap: clamp(18px, 2.6vw, 26px);
+}
+
+.slide:nth-of-type(-n + 3) .content {
+	gap: clamp(14px, 2.4vw, 22px);
+}
+
+.slide:nth-of-type(-n + 3) h1 {
+	font-size: clamp(2.1rem, 4.8vw, 2.8rem);
+}
+
+.slide:nth-of-type(-n + 3) h2 {
+	font-size: clamp(1.8rem, 4.2vw, 2.4rem);
 }
 
 .slide::after {
@@ -565,8 +558,8 @@ code {
 
 .floating-share {
 	position: absolute;
-	bottom: 20px;
-	right: 20px;
+	bottom: 0px;
+	left: 20px;
 	padding: 10px 22px;
 	border-radius: 999px;
 	width: auto;
