@@ -56,6 +56,19 @@ main {
 	gap: 16px;
 }
 
+.logo-title {
+	display: flex;
+	align-items: center;
+}
+
+.logo {
+	width: 100px;
+	height: 100px;
+	object-fit: contain;
+	filter: invert(1) drop-shadow(0 4px 12px rgba(99, 102, 241, 0.3));
+	margin-top: 8px;
+}
+
 .copy .button-group {
 	display: flex;
 	gap: 12px;
@@ -960,6 +973,15 @@ code {
 
 	.copy {
 		max-width: 100%;
+	}
+
+	.logo {
+		width: 72px;
+		height: 72px;
+	}
+
+	.logo-title {
+		gap: 12px;
 	}
 }
 
