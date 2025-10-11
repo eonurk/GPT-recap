@@ -162,7 +162,6 @@ const uploadLabel = document.getElementById("upload-label");
 const demoTrigger = document.getElementById("demo-trigger");
 const tryDemoBtn = document.getElementById("try-demo-btn");
 const demoContainer = document.getElementById("demo-container");
-const demoVideo = document.getElementById("demo-video");
 const closeDemo = document.getElementById("close-demo");
 const storyContainer = document.getElementById("story-container");
 const storyRail = document.getElementById("story-rail");
@@ -181,12 +180,6 @@ if (tryDemoBtn) {
 	tryDemoBtn.addEventListener("click", (event) => {
 		event.preventDefault();
 		loadDemoData();
-	});
-}
-
-if (uploadLabel) {
-	uploadLabel.addEventListener("click", () => {
-		openDemoPreview();
 	});
 }
 
@@ -265,16 +258,22 @@ function loadDemoData() {
 }
 
 function openDemoPreview() {
-	if (!demoContainer || !demoVideo) return;
+	if (!demoContainer) return;
 	demoContainer.classList.remove("hidden");
-	demoVideo.currentTime = 0;
-	demoVideo.play().catch(() => {});
+	const demoVideo = demoContainer.querySelector("video");
+	if (demoVideo) {
+		demoVideo.currentTime = 0;
+		demoVideo.play().catch(() => {});
+	}
 }
 
 function closeDemoPreview() {
-	if (!demoContainer || !demoVideo) return;
+	if (!demoContainer) return;
 	demoContainer.classList.add("hidden");
-	demoVideo.pause();
+	const demoVideo = demoContainer.querySelector("video");
+	if (demoVideo) {
+		demoVideo.pause();
+	}
 }
 
 function toggleDemoPreview() {

@@ -195,12 +195,93 @@ code {
 	background: rgba(15, 23, 42, 0.6);
 	border: 1px solid rgba(148, 163, 184, 0.2);
 	border-radius: 28px;
-	padding: 18px;
+	padding: 32px;
 	box-shadow: 0 24px 50px rgba(8, 7, 15, 0.55);
-	max-width: 420px;
+	max-width: 600px;
 	width: calc(100% - 32px);
 	display: flex;
 	flex-direction: column;
+	gap: 24px;
+	max-height: 90vh;
+	overflow-y: auto;
+}
+
+.demo-card h2 {
+	font-size: 1.75rem;
+	font-weight: 700;
+	color: #f1f5f9;
+	margin: 0;
+	text-align: center;
+}
+
+.export-steps {
+	display: flex;
+	flex-direction: column;
+	gap: 28px;
+}
+
+.export-step {
+	display: flex;
+	gap: 20px;
+	align-items: flex-start;
+}
+
+.step-number {
+	flex-shrink: 0;
+	width: 36px;
+	height: 36px;
+	background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: #ffffff;
+}
+
+.step-content {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.step-content h3 {
+	font-size: 1.15rem;
+	font-weight: 600;
+	color: #f1f5f9;
+	margin: 0;
+}
+
+.step-content p {
+	font-size: 0.95rem;
+	line-height: 1.6;
+	color: #cbd5e1;
+	margin: 0;
+}
+
+.step-content a {
+	color: #818cf8;
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+.step-content a:hover {
+	color: #a5b4fc;
+}
+
+.step-content code {
+	background: rgba(99, 102, 241, 0.15);
+	padding: 2px 6px;
+	border-radius: 4px;
+	font-size: 0.9rem;
+	color: #c7d2fe;
+}
+
+.export-step .phone-frame {
+	margin-top: 12px;
+	max-width: 100%;
 }
 
 .phone-frame {
@@ -279,6 +360,14 @@ code {
 	display: flex;
 	flex-direction: column;
 	gap: 18px;
+}
+
+.story-container.hidden {
+	display: none !important;
+}
+
+.story-rail:empty {
+	display: none;
 }
 
 .story-toolbar {
@@ -782,8 +871,21 @@ code {
 
 @media (max-width: 540px) {
 	body {
-		padding: 20px 12px 36px;
+		padding: 16px 12px 32px;
 		overscroll-behavior: none;
+	}
+
+	.hero {
+		padding: 16px;
+	}
+
+	.logo {
+		width: 56px;
+		height: 56px;
+	}
+
+	.logo-title h1 {
+		font-size: clamp(1.8rem, 10vw, 2.4rem);
 	}
 
 	.story-rail {
@@ -832,26 +934,44 @@ code {
 		height: calc(100vh - 200px);
 		min-height: 600px;
 		max-height: 800px;
-		padding: clamp(20px, 4vh, 28px) clamp(18px, 5vw, 24px)
-			clamp(28px, 5vh, 36px);
-		gap: clamp(12px, 2.2vh, 16px);
+		padding: clamp(16px, 3.5vh, 24px) clamp(16px, 4.5vw, 22px)
+			clamp(24px, 4.5vh, 32px);
+		gap: clamp(10px, 2vh, 14px);
 		scroll-snap-stop: always;
 		scroll-snap-align: start;
 		margin-bottom: 20px;
 		touch-action: pan-y;
 	}
 
+	.slide .content {
+		padding-bottom: clamp(40px, 7vh, 60px);
+	}
+
 	.slide::after {
-		bottom: clamp(8px, 2vh, 16px);
-		left: clamp(24px, 4vw, 52px);
-		font-size: 0.7rem;
+		bottom: clamp(10px, 2vh, 18px);
+		left: clamp(16px, 4.5vw, 24px);
+		right: clamp(16px, 4.5vw, 24px);
+		font-size: 0.65rem;
 		font-weight: 600;
-		letter-spacing: 0.1em;
+		letter-spacing: 0.08em;
 		color: rgba(148, 163, 184, 0.4);
 	}
 
 	.stats {
 		grid-template-columns: repeat(1, minmax(0, 1fr));
+		gap: clamp(8px, 1.5vh, 12px);
+	}
+
+	.stat {
+		padding: clamp(10px, 2vh, 14px);
+	}
+
+	.stat .value {
+		font-size: clamp(1.2rem, 5vw, 1.5rem);
+	}
+
+	.stat .label {
+		font-size: clamp(0.65rem, 2.5vw, 0.75rem);
 	}
 
 	.highlights {
@@ -863,9 +983,9 @@ code {
 		height: calc(100vh - 200px);
 		min-height: 600px;
 		max-height: 800px;
-		padding: clamp(20px, 4vh, 28px) clamp(18px, 5vw, 24px)
-			clamp(28px, 5vh, 36px);
-		gap: clamp(12px, 2.2vh, 16px);
+		padding: clamp(16px, 3.5vh, 24px) clamp(16px, 4.5vw, 22px)
+			clamp(24px, 4.5vh, 32px);
+		gap: clamp(10px, 2vh, 14px);
 	}
 
 	.chart-slide .chart-insights {
@@ -874,7 +994,8 @@ code {
 	}
 
 	.chart-slide .visual {
-		max-height: clamp(180px, 45vh, 260px);
+		max-height: clamp(160px, 42vh, 240px);
+		padding: 0 clamp(4px, 2vw, 8px);
 	}
 
 	.chart-slide .highlights,
@@ -888,41 +1009,41 @@ code {
 	}
 
 	.highlight {
-		padding: clamp(10px, 2vh, 14px);
-		gap: 4px;
+		padding: clamp(8px, 1.8vh, 12px);
+		gap: 3px;
 	}
 
 	.highlight .emoji {
-		font-size: clamp(0.95rem, 4vw, 1.2rem);
+		font-size: clamp(0.9rem, 3.8vw, 1.1rem);
 		margin-bottom: 2px;
 	}
 
 	.highlight .value {
-		font-size: clamp(1.2rem, 5vw, 1.5rem);
+		font-size: clamp(1.1rem, 4.8vw, 1.4rem);
 	}
 
 	.highlight .label {
-		font-size: clamp(0.65rem, 2.5vw, 0.72rem);
+		font-size: clamp(0.62rem, 2.3vw, 0.7rem);
 	}
 
 	.highlight .detail {
-		font-size: clamp(0.75rem, 3vw, 0.82rem);
+		font-size: clamp(0.72rem, 2.8vw, 0.8rem);
 	}
 
 	.slide h1,
 	.slide h2 {
-		font-size: clamp(1.75rem, 6.5vw, 2.1rem);
-		line-height: 1.12;
+		font-size: clamp(1.65rem, 6vw, 2rem);
+		line-height: 1.15;
 	}
 
 	.slide p {
-		font-size: clamp(0.92rem, 4vw, 1.05rem);
-		line-height: 1.45;
+		font-size: clamp(0.88rem, 3.8vw, 1rem);
+		line-height: 1.5;
 	}
 
 	.slide .tag {
-		font-size: clamp(0.65rem, 2.5vw, 0.72rem);
-		padding: 5px 12px;
+		font-size: clamp(0.62rem, 2.3vw, 0.7rem);
+		padding: 4px 10px;
 	}
 
 	.chart-slide h2 {
@@ -956,9 +1077,41 @@ code {
 	}
 
 	.slide footer {
-		bottom: clamp(16px, 2.5vh, 24px);
-		right: clamp(18px, 5vw, 24px);
-		font-size: 0.8rem;
+		bottom: clamp(12px, 2.5vh, 20px);
+		left: clamp(16px, 4.5vw, 24px);
+		right: clamp(16px, 4.5vw, 24px);
+		font-size: 0.65rem;
+	}
+
+	.demo-card {
+		padding: 20px;
+		max-width: calc(100% - 24px);
+	}
+
+	.demo-card h2 {
+		font-size: 1.4rem;
+	}
+
+	.export-steps {
+		gap: 20px;
+	}
+
+	.export-step {
+		gap: 14px;
+	}
+
+	.step-number {
+		width: 32px;
+		height: 32px;
+		font-size: 1rem;
+	}
+
+	.step-content h3 {
+		font-size: 1.05rem;
+	}
+
+	.step-content p {
+		font-size: 0.9rem;
 	}
 }
 
@@ -971,6 +1124,7 @@ code {
 		flex-direction: column;
 		align-items: flex-start;
 		text-align: left;
+		padding: clamp(20px, 4vw, 32px);
 	}
 
 	.copy {
@@ -984,6 +1138,32 @@ code {
 
 	.logo-title {
 		gap: 12px;
+		flex-wrap: wrap;
+	}
+
+	.logo-title h1 {
+		font-size: clamp(2rem, 8vw, 2.8rem);
+	}
+
+	.copy .button-group {
+		flex-direction: column;
+		width: 100%;
+		gap: 10px;
+	}
+
+	.upload,
+	.demo-btn {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.demo-card {
+		padding: 24px;
+		max-width: calc(100% - 32px);
+	}
+
+	.demo-card h2 {
+		font-size: 1.5rem;
 	}
 }
 

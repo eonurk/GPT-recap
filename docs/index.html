@@ -72,10 +72,36 @@
 
       <section id="demo-container" class="demo hidden">
         <div class="demo-card">
-          <div class="phone-frame">
-            <video id="demo-video" src="gpt-export.mp4" controls playsinline preload="metadata"></video>
+          <h2>How to Export Your ChatGPT Data</h2>
+          <div class="export-steps">
+            <div class="export-step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h3>Log in to ChatGPT</h3>
+                <p>Go to <a href="https://chat.openai.com" target="_blank" rel="noopener">chat.openai.com</a> and log in to your ChatGPT account in your browser</p>
+              </div>
+            </div>
+            
+            <div class="export-step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h3>Export Your Data</h3>
+                <p>Click on your profile in the bottom left corner, then select <strong>Settings</strong> → <strong>Data Controls</strong> → <strong>Export Data</strong></p>
+                <div class="phone-frame">
+                  <video src="gpt-export.mp4" controls playsinline preload="metadata" width="100%" height="auto"></video>
+                </div>
+              </div>
+            </div>
+            
+            <div class="export-step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h3>Upload to ChatRecap</h3>
+                <p>After receiving the email, download and unzip the file. Upload the <code>conversations.json</code> file here to get your recap!</p>
+              </div>
+            </div>
           </div>
-          <button id="close-demo" class="action secondary">Close preview</button>
+          <button id="close-demo" class="action secondary">Close</button>
         </div>
       </section>
 
