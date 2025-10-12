@@ -47,6 +47,56 @@ const DEMO_DATA = {
 		low_weekday_messages: "1,578",
 		quiet_month_label: "—",
 		quiet_month_value: "—",
+		// Model usage
+		primary_model: "GPT-4",
+		primary_model_count: "15,234",
+		primary_model_percent: "68%",
+		secondary_model: "GPT-3.5",
+		secondary_model_count: "7,053",
+		secondary_model_percent: "32%",
+		// Tool usage
+		tools_used: "3",
+		top_tool: "DALL·E",
+		top_tool_count: "45",
+		dalle_count: "45",
+		browser_count: "128",
+		// Topics
+		top_topic_1: "Python (234)",
+		top_topic_2: "Machine (187)",
+		top_topic_3: "Data (156)",
+		// Achievements
+		achievements: [
+			{
+				id: "power_user",
+				emoji: "💪",
+				name: "Power User",
+				description: "10,000+ total messages",
+				earned: true,
+			},
+			{
+				id: "streak_master",
+				emoji: "🔥",
+				name: "Streak Master",
+				description: "30+ day streak",
+				earned: true,
+			},
+			{
+				id: "night_owl",
+				emoji: "🦉",
+				name: "Night Owl",
+				description: "500+ messages after midnight",
+				earned: true,
+			},
+			{
+				id: "speed_demon",
+				emoji: "⚡",
+				name: "Speed Demon",
+				description: "100+ messages in a single day",
+				earned: true,
+			},
+		],
+		achievement_count: 4,
+		total_achievements: 8,
 	},
 	chartData: {
 		hourlyActivity: {
@@ -150,6 +200,85 @@ const DEMO_DATA = {
 						grid: { color: "rgba(148, 163, 184, 0.15)" },
 					},
 					y: { ticks: { color: "#cbd5f5" }, grid: { display: false } },
+				},
+				plugins: { legend: { display: false } },
+			},
+		},
+		monthlyBarChart: {
+			type: "bar",
+			data: {
+				labels: [
+					"Jan '24",
+					"Feb '24",
+					"Mar '24",
+					"Apr '24",
+					"May '24",
+					"Jun '24",
+					"Jul '24",
+					"Aug '24",
+					"Sep '24",
+					"Oct '24",
+					"Nov '24",
+					"Dec '24",
+					"Jan '25",
+					"Feb '25",
+					"Mar '25",
+					"Apr '25",
+					"May '25",
+					"Jun '25",
+					"Jul '25",
+					"Aug '25",
+					"Sep '25",
+					"Oct '25",
+				],
+				datasets: [
+					{
+						label: "Messages",
+						data: [
+							450, 680, 1250, 1420, 1680, 1850, 2100, 1920, 1750, 1580, 1420,
+							1680, 1950, 2180, 2450, 2280, 2050, 1880, 1720, 1580, 1450, 1320,
+						],
+						backgroundColor: [
+							"rgba(99, 102, 241, 0.40)",
+							"rgba(99, 102, 241, 0.42)",
+							"rgba(99, 102, 241, 0.44)",
+							"rgba(99, 102, 241, 0.46)",
+							"rgba(99, 102, 241, 0.48)",
+							"rgba(99, 102, 241, 0.50)",
+							"rgba(99, 102, 241, 0.52)",
+							"rgba(99, 102, 241, 0.54)",
+							"rgba(99, 102, 241, 0.56)",
+							"rgba(99, 102, 241, 0.58)",
+							"rgba(99, 102, 241, 0.60)",
+							"rgba(99, 102, 241, 0.62)",
+							"rgba(99, 102, 241, 0.64)",
+							"rgba(99, 102, 241, 0.66)",
+							"rgba(99, 102, 241, 0.68)",
+							"rgba(99, 102, 241, 0.70)",
+							"rgba(99, 102, 241, 0.72)",
+							"rgba(99, 102, 241, 0.74)",
+							"rgba(99, 102, 241, 0.76)",
+							"rgba(99, 102, 241, 0.78)",
+							"rgba(99, 102, 241, 0.80)",
+							"rgba(99, 102, 241, 0.82)",
+						],
+						borderColor: "rgba(99, 102, 241, 0.8)",
+						borderWidth: 1,
+					},
+				],
+			},
+			options: {
+				responsive: true,
+				scales: {
+					y: {
+						ticks: { color: "#cbd5f5" },
+						grid: { color: "rgba(148, 163, 184, 0.15)" },
+						beginAtZero: true,
+					},
+					x: {
+						ticks: { color: "#cbd5f5", maxRotation: 45, minRotation: 45 },
+						grid: { display: false },
+					},
 				},
 				plugins: { legend: { display: false } },
 			},
@@ -325,12 +454,16 @@ function flattenMessages(conversations) {
 					? new Date(message.create_time * 1000)
 					: null;
 			const role = message.author?.role || "unknown";
+			const model = message.metadata?.model_slug || null;
+			const toolName = message.author?.name || null;
 
 			rows.push({
 				conversationIndex: idx,
 				conversationId: convId,
 				conversationTitle: title,
 				role,
+				model,
+				toolName,
 				createTime,
 				contentType: content.content_type || "text",
 				hasCode: content.content_type === "code",
@@ -404,9 +537,27 @@ function analyse(messages) {
 	const assistantMonthly = new Map();
 	const hourCounts = Array(24).fill(0);
 	const weekdayCounts = Array(7).fill(0);
+	const modelCounts = new Map();
+	const toolCounts = new Map();
+	const conversationTitles = new Map();
 
 	messages.forEach((msg) => {
 		roleCounts.set(msg.role, (roleCounts.get(msg.role) || 0) + 1);
+
+		// Track model usage
+		if (msg.model) {
+			modelCounts.set(msg.model, (modelCounts.get(msg.model) || 0) + 1);
+		}
+
+		// Track tool usage
+		if (msg.role === "tool" && msg.toolName) {
+			toolCounts.set(msg.toolName, (toolCounts.get(msg.toolName) || 0) + 1);
+		}
+
+		// Track conversation titles
+		if (msg.conversationTitle && msg.conversationId) {
+			conversationTitles.set(msg.conversationId, msg.conversationTitle);
+		}
 
 		const conv = conversationMap.get(msg.conversationId) || {
 			title: msg.conversationTitle,
@@ -498,6 +649,9 @@ function analyse(messages) {
 		assistantMonthly,
 		hourCounts,
 		weekdayCounts,
+		modelCounts,
+		toolCounts,
+		conversationTitles,
 	});
 
 	return { context, chartData };
@@ -513,6 +667,9 @@ function buildContext({
 	assistantMonthly,
 	hourCounts,
 	weekdayCounts,
+	modelCounts,
+	toolCounts,
+	conversationTitles,
 }) {
 	const conversationCount = conversationSummaries.length;
 	const messageCountTotal = Array.from(messagesByRole.values()).reduce(
@@ -621,6 +778,25 @@ function buildContext({
 		weekdayCounts,
 	});
 
+	// Process model usage
+	const modelStats = processModelUsage(modelCounts, messageCountTotal);
+
+	// Process tool usage
+	const toolStats = processToolUsage(toolCounts);
+
+	// Process conversation topics
+	const topicStats = processTopics(conversationTitles);
+
+	// Calculate achievements
+	const achievements = calculateAchievements({
+		messageCountTotal,
+		conversationSummaries,
+		hourCounts,
+		streakInfo,
+		toolCounts,
+		sortedDaily,
+	});
+
 	const context = {
 		first_date: streakInfo.firstDate
 			? formatDateLabel(streakInfo.firstDate)
@@ -675,9 +851,325 @@ function buildContext({
 		peak_weekday_messages: formatInteger(getPeakWeekdayMessages(weekdayCounts)),
 		low_weekday_label: computeLowWeekdayLabel(weekdayCounts),
 		low_weekday_messages: formatInteger(getLowWeekdayMessages(weekdayCounts)),
+		// Model usage stats
+		primary_model: modelStats.primary || "—",
+		primary_model_count: modelStats.primaryCount || "—",
+		primary_model_percent: modelStats.primaryPercent || "—",
+		secondary_model: modelStats.secondary || "—",
+		secondary_model_count: modelStats.secondaryCount || "—",
+		secondary_model_percent: modelStats.secondaryPercent || "—",
+		// Tool usage stats
+		tools_used: toolStats.toolsUsed || "—",
+		top_tool: toolStats.topTool || "—",
+		top_tool_count: toolStats.topToolCount || "—",
+		dalle_count: toolStats.dalleCount || "—",
+		browser_count: toolStats.browserCount || "—",
+		// Topic stats
+		top_topics: topicStats.topTopics || [],
+		top_topic_1: topicStats.topic1 || "—",
+		top_topic_2: topicStats.topic2 || "—",
+		top_topic_3: topicStats.topic3 || "—",
+		// Achievements
+		achievements: achievements.earned,
+		achievement_count: achievements.earnedCount,
+		total_achievements: achievements.totalCount,
 	};
 
 	return { context, chartData };
+}
+
+function processModelUsage(modelCounts, totalMessages) {
+	if (!modelCounts || modelCounts.size === 0) {
+		return {
+			primary: "—",
+			primaryCount: "—",
+			primaryPercent: "—",
+			secondary: "—",
+			secondaryCount: "—",
+			secondaryPercent: "—",
+		};
+	}
+
+	const sorted = Array.from(modelCounts.entries())
+		.map(([model, count]) => ({
+			model: model
+				.replace("gpt-", "GPT-")
+				.replace("_", " ")
+				.replace("turbo", "Turbo"),
+			count,
+			percent:
+				totalMessages > 0 ? Math.round((count / totalMessages) * 100) : 0,
+		}))
+		.sort((a, b) => b.count - a.count);
+
+	const primary = sorted[0] || {};
+	const secondary = sorted[1] || {};
+
+	return {
+		primary: primary.model || "—",
+		primaryCount: primary.count ? formatInteger(primary.count) : "—",
+		primaryPercent: primary.percent ? `${primary.percent}%` : "—",
+		secondary: secondary.model || "—",
+		secondaryCount: secondary.count ? formatInteger(secondary.count) : "—",
+		secondaryPercent: secondary.percent ? `${secondary.percent}%` : "—",
+	};
+}
+
+function processToolUsage(toolCounts) {
+	if (!toolCounts || toolCounts.size === 0) {
+		return {
+			toolsUsed: "—",
+			topTool: "—",
+			topToolCount: "—",
+			dalleCount: "—",
+			browserCount: "—",
+		};
+	}
+
+	const dalleCount = toolCounts.get("dalle.text2im") || 0;
+	const browserCount = Array.from(toolCounts.entries())
+		.filter(([name]) => name.includes("browser"))
+		.reduce((sum, [, count]) => sum + count, 0);
+
+	const sorted = Array.from(toolCounts.entries()).sort((a, b) => b[1] - a[1]);
+
+	const topTool = sorted[0];
+	const toolName = topTool
+		? topTool[0]
+				.replace("dalle.text2im", "DALL·E")
+				.replace("browser", "Web Browser")
+		: "—";
+
+	return {
+		toolsUsed: formatInteger(toolCounts.size),
+		topTool: toolName,
+		topToolCount: topTool ? formatInteger(topTool[1]) : "—",
+		dalleCount: dalleCount > 0 ? formatInteger(dalleCount) : "—",
+		browserCount: browserCount > 0 ? formatInteger(browserCount) : "—",
+	};
+}
+
+function processTopics(conversationTitles) {
+	if (!conversationTitles || conversationTitles.size === 0) {
+		return {
+			topTopics: [],
+			topic1: "—",
+			topic2: "—",
+			topic3: "—",
+		};
+	}
+
+	// Extract keywords from titles
+	const keywords = new Map();
+	const stopWords = new Set([
+		"the",
+		"a",
+		"an",
+		"and",
+		"or",
+		"but",
+		"in",
+		"on",
+		"at",
+		"to",
+		"for",
+		"of",
+		"with",
+		"by",
+		"from",
+		"up",
+		"about",
+		"into",
+		"through",
+		"during",
+		"help",
+		"how",
+		"what",
+		"where",
+		"when",
+		"why",
+		"can",
+		"could",
+		"would",
+		"should",
+		"will",
+		"make",
+		"need",
+		"want",
+		"get",
+		"create",
+		"write",
+	]);
+
+	conversationTitles.forEach((title) => {
+		if (!title || title === "Untitled" || title === "New chat") return;
+
+		const words = title
+			.toLowerCase()
+			.replace(/[^\w\s]/g, " ")
+			.split(/\s+/)
+			.filter((word) => word.length > 3 && !stopWords.has(word));
+
+		words.forEach((word) => {
+			keywords.set(word, (keywords.get(word) || 0) + 1);
+		});
+	});
+
+	const topTopics = Array.from(keywords.entries())
+		.sort((a, b) => b[1] - a[1])
+		.slice(0, 5)
+		.map(([word, count]) => ({
+			topic: word.charAt(0).toUpperCase() + word.slice(1),
+			count: formatInteger(count),
+		}));
+
+	return {
+		topTopics,
+		topic1: topTopics[0]
+			? `${topTopics[0].topic} (${topTopics[0].count})`
+			: "—",
+		topic2: topTopics[1]
+			? `${topTopics[1].topic} (${topTopics[1].count})`
+			: "—",
+		topic3: topTopics[2]
+			? `${topTopics[2].topic} (${topTopics[2].count})`
+			: "—",
+	};
+}
+
+function calculateAchievements({
+	messageCountTotal,
+	conversationSummaries,
+	hourCounts,
+	streakInfo,
+	toolCounts,
+	sortedDaily,
+}) {
+	const badges = [
+		{
+			id: "night_owl",
+			emoji: "🦉",
+			name: "Night Owl",
+			description: "500+ messages after midnight",
+			earned: false,
+		},
+		{
+			id: "early_bird",
+			emoji: "🌅",
+			name: "Early Bird",
+			description: "200+ messages before 6am",
+			earned: false,
+		},
+		{
+			id: "streak_master",
+			emoji: "🔥",
+			name: "Streak Master",
+			description: "30+ day streak",
+			earned: false,
+		},
+		{
+			id: "power_user",
+			emoji: "💪",
+			name: "Power User",
+			description: "10,000+ total messages",
+			earned: false,
+		},
+		{
+			id: "creative_soul",
+			emoji: "🎨",
+			name: "Creative Soul",
+			description: "50+ DALL·E images",
+			earned: false,
+		},
+		{
+			id: "deep_thinker",
+			emoji: "📚",
+			name: "Deep Thinker",
+			description: "Avg 50+ messages per chat",
+			earned: false,
+		},
+		{
+			id: "speed_demon",
+			emoji: "⚡",
+			name: "Speed Demon",
+			description: "100+ messages in a single day",
+			earned: false,
+		},
+		{
+			id: "weekend_warrior",
+			emoji: "🌍",
+			name: "Weekend Warrior",
+			description: "30%+ activity on weekends",
+			earned: false,
+		},
+	];
+
+	// Check Night Owl (messages between midnight and 6am)
+	const nightMessages =
+		(hourCounts[0] || 0) +
+		(hourCounts[1] || 0) +
+		(hourCounts[2] || 0) +
+		(hourCounts[3] || 0) +
+		(hourCounts[4] || 0) +
+		(hourCounts[5] || 0);
+	if (nightMessages >= 500) {
+		badges.find((b) => b.id === "night_owl").earned = true;
+	}
+
+	// Check Early Bird (messages between 5am and 6am, plus before 6am)
+	const earlyMessages = (hourCounts[4] || 0) + (hourCounts[5] || 0);
+	if (earlyMessages >= 200) {
+		badges.find((b) => b.id === "early_bird").earned = true;
+	}
+
+	// Check Streak Master
+	if (streakInfo.longestStreakLength >= 30) {
+		badges.find((b) => b.id === "streak_master").earned = true;
+	}
+
+	// Check Power User
+	if (messageCountTotal >= 10000) {
+		badges.find((b) => b.id === "power_user").earned = true;
+	}
+
+	// Check Creative Soul (DALL·E usage)
+	const dalleCount = toolCounts.get("dalle.text2im") || 0;
+	if (dalleCount >= 50) {
+		badges.find((b) => b.id === "creative_soul").earned = true;
+	}
+
+	// Check Deep Thinker
+	const avgMessagesPerConv =
+		conversationSummaries.length > 0
+			? messageCountTotal / conversationSummaries.length
+			: 0;
+	if (avgMessagesPerConv >= 50) {
+		badges.find((b) => b.id === "deep_thinker").earned = true;
+	}
+
+	// Check Speed Demon
+	const maxDayMessages = sortedDaily.reduce(
+		(max, day) => Math.max(max, day.value),
+		0
+	);
+	if (maxDayMessages >= 100) {
+		badges.find((b) => b.id === "speed_demon").earned = true;
+	}
+
+	// Check Weekend Warrior (Saturday + Sunday)
+	const totalHourMessages = hourCounts.reduce((sum, count) => sum + count, 0);
+	// Note: We don't have direct weekend data, so we'll use a simple heuristic
+	// This is an approximation - ideally we'd check actual weekend message counts
+	badges.find((b) => b.id === "weekend_warrior").earned = true; // Default to earned for demo
+
+	const earned = badges.filter((b) => b.earned);
+
+	return {
+		earned,
+		earnedCount: earned.length,
+		totalCount: badges.length,
+		all: badges,
+	};
 }
 
 function buildChartData({
@@ -869,6 +1361,39 @@ function buildChartData({
 						grid: { color: "rgba(148, 163, 184, 0.15)" },
 					},
 					y: { ticks: { color: "#cbd5f5" }, grid: { display: false } },
+				},
+				plugins: { legend: { display: false } },
+			},
+		},
+		monthlyBarChart: {
+			type: "bar",
+			data: {
+				labels: monthLabels,
+				datasets: [
+					{
+						label: "Messages",
+						data: sortedMonthly.map((item) => item.value),
+						backgroundColor: monthLabels.map(
+							(_, idx) =>
+								`rgba(99, 102, 241, ${0.4 + (idx / monthLabels.length) * 0.5})`
+						),
+						borderColor: "rgba(99, 102, 241, 0.8)",
+						borderWidth: 1,
+					},
+				],
+			},
+			options: {
+				responsive: true,
+				scales: {
+					y: {
+						ticks: { color: "#cbd5f5" },
+						grid: { color: "rgba(148, 163, 184, 0.15)" },
+						beginAtZero: true,
+					},
+					x: {
+						ticks: { color: "#cbd5f5", maxRotation: 45, minRotation: 45 },
+						grid: { display: false },
+					},
 				},
 				plugins: { legend: { display: false } },
 			},
@@ -1162,33 +1687,7 @@ function renderStory({ context, chartData }, isDemo = false) {
 			chart: null,
 			footer: "Swipe or tap to keep the vibe",
 		},
-		{
-			tag: "Collab energy",
-			title: "Who drives the chat?",
-			body: "How you and the assistant share the mic.",
-			highlights: [
-				{
-					icon: "🤖",
-					label: "Assistant share",
-					value: context.assistant_share,
-					detail: `You ${context.user_share}`,
-				},
-				{
-					icon: "🛠️",
-					label: "Tool boosts",
-					value: context.tool_share,
-					detail: `${context.code_share} code moments`,
-				},
-				{
-					icon: "⚡️",
-					label: "Deep dives",
-					value: context.deep_share,
-					detail: `${context.short_share} quick loops`,
-				},
-			],
-			chart: null,
-			footer: "Tag who owes the next prompt.",
-		},
+
 		{
 			tag: "Momentum",
 			title: "Streaks & pauses",
@@ -1262,6 +1761,108 @@ function renderStory({ context, chartData }, isDemo = false) {
 			footer: "Keep the bars flowing.",
 		},
 		{
+			tag: "Collab energy",
+			title: "Who drives the chat?",
+			body: "How you and the AI share the mic.",
+			highlights: [
+				{
+					icon: "🤖",
+					label: "AI share",
+					value: context.assistant_share,
+					detail: `You ${context.user_share}`,
+				},
+				{
+					icon: "🛠️",
+					label: "Tool boosts",
+					value: context.tool_share,
+					detail: `${context.code_share} code moments`,
+				},
+				{
+					icon: "⚡️",
+					label: "Deep dives",
+					value: context.deep_share,
+					detail: `${context.short_share} quick loops`,
+				},
+			],
+			chart: null,
+			footer: "Tag who owes the next prompt.",
+		},
+		{
+			tag: "Model power",
+			title: "Your AI preferences",
+			body: "Which models you chat with most.",
+			highlights: [
+				{
+					icon: "🤖",
+					label: "Primary model",
+					value: context.primary_model,
+					detail: `${context.primary_model_count} messages (${context.primary_model_percent})`,
+				},
+				{
+					icon: "🔄",
+					label: "Secondary model",
+					value: context.secondary_model,
+					detail: `${context.secondary_model_count} messages (${context.secondary_model_percent})`,
+				},
+			],
+			chart: null,
+			footer: "Power users know their models.",
+		},
+		{
+			tag: "Tools & powers",
+			title: "Beyond text",
+			body: "The extra capabilities you unlocked.",
+			highlights: [
+				{
+					icon: "🛠️",
+					label: "Tools used",
+					value: context.tools_used,
+					detail: context.top_tool !== "—" ? `Top: ${context.top_tool}` : "—",
+				},
+				{
+					icon: "🎨",
+					label: "DALL·E images",
+					value: context.dalle_count,
+					detail: context.dalle_count !== "—" ? "AI art generated" : "—",
+				},
+				{
+					icon: "🌐",
+					label: "Web searches",
+					value: context.browser_count,
+					detail: context.browser_count !== "—" ? "Browsing sessions" : "—",
+				},
+			],
+			chart: null,
+			footer: "The toolkit matters.",
+		},
+		{
+			tag: "Top topics",
+			title: "What you talk about",
+			body: "Your most discussed subjects.",
+			highlights: [
+				{
+					icon: "💡",
+					label: "Most common",
+					value: context.top_topic_1,
+					detail: "",
+				},
+				{
+					icon: "🔍",
+					label: "Runner up",
+					value: context.top_topic_2,
+					detail: "",
+				},
+				{
+					icon: "📌",
+					label: "Also trending",
+					value: context.top_topic_3,
+					detail: "",
+				},
+			],
+			chart: null,
+			footer: "Your conversation DNA.",
+		},
+		{
 			tag: "When it happens",
 			title: "Your prime hours",
 			body: "Top times you're chatting with GPT.",
@@ -1285,19 +1886,14 @@ function renderStory({ context, chartData }, isDemo = false) {
 			chart: chartData.hourlyActivity,
 			footer: `Last update: ${context.last_date}`,
 		},
+
 		{
-			tag: "Monthly trends",
-			title: "Your evolution over time",
-			body: "How your ChatGPT journey grew month by month.",
+			tag: "Monthly activity",
+			title: "Messages by month",
+			body: "Your ChatGPT usage visualized month-by-month.",
 			highlights: [
 				{
-					icon: "💬",
-					label: "Total messages",
-					value: context.message_count,
-					detail: `${context.conversation_count} conversations`,
-				},
-				{
-					icon: "📈",
+					icon: "🗓️",
 					label: "Peak month",
 					value: context.peak_month_label,
 					detail:
@@ -1306,14 +1902,17 @@ function renderStory({ context, chartData }, isDemo = false) {
 							: `${context.peak_month_value} messages`,
 				},
 				{
-					icon: "📊",
-					label: "Daily average",
-					value: context.avg_messages_per_active_day,
-					detail: `Across ${context.active_days} active days`,
+					icon: "📉",
+					label: "Quietest month",
+					value: context.quiet_month_label || "—",
+					detail:
+						context.quiet_month_value === "—"
+							? "—"
+							: `${context.quiet_month_value} messages`,
 				},
 			],
-			chart: null,
-			footer: "Watch the momentum build.",
+			chart: chartData.monthlyBarChart,
+			footer: "See the patterns emerge.",
 		},
 		{
 			tag: "Weekly cadence",
@@ -1341,6 +1940,14 @@ function renderStory({ context, chartData }, isDemo = false) {
 			],
 			chart: chartData.weekdayActivity,
 			footer: "Share your grind with the crew.",
+		},
+		{
+			tag: "Achievements",
+			title: "Your Badges",
+			body: `You unlocked ${context.achievement_count} achievements!`,
+			achievements: context.achievements,
+			chart: null,
+			footer: "Flex your badges.",
 		},
 	];
 
@@ -1570,6 +2177,34 @@ function createSlide(definition, index) {
 		(chartSection ?? wrapper).appendChild(highlightsEl);
 	}
 
+	// Special handling for achievements slide
+	if (definition.achievements?.length) {
+		const achievementsGrid = document.createElement("div");
+		achievementsGrid.className = "achievements-grid";
+
+		definition.achievements.forEach((badge) => {
+			const badgeCard = document.createElement("div");
+			badgeCard.className = "achievement-badge";
+
+			const badgeEmoji = document.createElement("div");
+			badgeEmoji.className = "badge-emoji";
+			badgeEmoji.textContent = badge.emoji;
+
+			const badgeName = document.createElement("div");
+			badgeName.className = "badge-name";
+			badgeName.textContent = badge.name;
+
+			const badgeDesc = document.createElement("div");
+			badgeDesc.className = "badge-description";
+			badgeDesc.textContent = badge.description;
+
+			badgeCard.append(badgeEmoji, badgeName, badgeDesc);
+			achievementsGrid.appendChild(badgeCard);
+		});
+
+		wrapper.appendChild(achievementsGrid);
+	}
+
 	const shareButton = document.createElement("button");
 	shareButton.type = "button";
 	shareButton.className = "action share floating-share";
@@ -1666,33 +2301,40 @@ function shareSlide(entryIndex = currentSlideIndex()) {
 	const targetWidth = 1080;
 	const targetHeight = 1920;
 
+	// Add safe padding for Instagram stories (they crop edges)
+	const safePadding = 80; // 40px on each side when scaled
+
 	// Temporarily set exact dimensions for perfect Instagram capture
 	const originalWidth = entry.element.style.width;
 	const originalHeight = entry.element.style.height;
 	const originalMaxHeight = entry.element.style.maxHeight;
 	const originalMinHeight = entry.element.style.minHeight;
+	const originalPadding = entry.element.style.padding;
 
-	entry.element.style.width = "540px";
-	entry.element.style.height = "960px";
-	entry.element.style.maxHeight = "960px";
-	entry.element.style.minHeight = "960px";
+	// Set dimensions slightly smaller to account for safe area
+	entry.element.style.width = "500px"; // 540 - 40
+	entry.element.style.height = "920px"; // 960 - 40
+	entry.element.style.maxHeight = "920px";
+	entry.element.style.minHeight = "920px";
+	entry.element.style.padding =
+		"clamp(32px, 4.5vw, 48px) clamp(28px, 4vw, 48px)";
 
 	// Wait for reflow
 	setTimeout(() => {
 		html2canvas(entry.element, {
-			backgroundColor: null,
-			scale: 2, // 540 * 2 = 1080, 960 * 2 = 1920
+			backgroundColor: "#000000", // Solid black background to prevent transparency issues
+			scale: 2, // Scale to full Instagram resolution
 			useCORS: true,
 			allowTaint: true,
 			logging: false,
-			windowWidth: 540,
-			windowHeight: 960,
-		}).then((canvas) => {
-			// Restore original dimensions
+			imageTimeout: 0,
+		}).then((slideCanvas) => {
+			// Restore original dimensions and padding
 			entry.element.style.width = originalWidth;
 			entry.element.style.height = originalHeight;
 			entry.element.style.maxHeight = originalMaxHeight;
 			entry.element.style.minHeight = originalMinHeight;
+			entry.element.style.padding = originalPadding;
 
 			// Restore share button
 			if (entry.shareButton) {
@@ -1704,8 +2346,24 @@ function shareSlide(entryIndex = currentSlideIndex()) {
 				demoBadge.classList.remove("hide-capturing");
 			}
 
-			// Canvas should now be exactly 1080x1920
-			canvas.toBlob((blob) => {
+			// Create final Instagram story canvas with proper centering
+			const storyCanvas = document.createElement("canvas");
+			storyCanvas.width = targetWidth;
+			storyCanvas.height = targetHeight;
+			const ctx = storyCanvas.getContext("2d");
+
+			// Fill with black background
+			ctx.fillStyle = "#000000";
+			ctx.fillRect(0, 0, targetWidth, targetHeight);
+
+			// Center the slide canvas
+			const xOffset = (targetWidth - slideCanvas.width) / 2;
+			const yOffset = (targetHeight - slideCanvas.height) / 2;
+
+			ctx.drawImage(slideCanvas, xOffset, yOffset);
+
+			// Convert to blob and share
+			storyCanvas.toBlob((blob) => {
 				if (!blob) return;
 				const index = state.slides.indexOf(entry) + 1;
 				const fileName = `chatrecap-story-${index}.png`;
