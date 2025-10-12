@@ -292,6 +292,7 @@ const demoTrigger = document.getElementById("demo-trigger");
 const tryDemoBtn = document.getElementById("try-demo-btn");
 const demoContainer = document.getElementById("demo-container");
 const closeDemo = document.getElementById("close-demo");
+const downloadAllBtn = document.getElementById("download-all-btn");
 const storyContainer = document.getElementById("story-container");
 const storyRail = document.getElementById("story-rail");
 const storyProgress = document.getElementById("story-progress");
@@ -315,6 +316,12 @@ if (tryDemoBtn) {
 if (closeDemo) {
 	closeDemo.addEventListener("click", () => {
 		closeDemoPreview();
+	});
+}
+
+if (downloadAllBtn) {
+	downloadAllBtn.addEventListener("click", () => {
+		downloadAllSlides();
 	});
 }
 
@@ -2408,4 +2415,138 @@ function downloadBlob(blob, fileName) {
 	link.download = fileName;
 	link.click();
 	setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+async function downloadAllSlides() {
+	if (!state.slides || state.slides.length === 0) {
+		alert("No slides to download!");
+		return;
+	}
+
+	// Show loading state
+	downloadAllBtn.disabled = true;
+	downloadAllBtn.classList.add("downloading");
+	const originalText = downloadAllBtn.textContent;
+	downloadAllBtn.textContent = "📦 Creating ZIP...";
+
+	try {
+		const zip = new JSZip();
+		const folder = zip.folder("chatrecap-slides");
+
+		// Instagram story dimensions
+		const targetWidth = 1080;
+		const targetHeight = 1920;
+
+		// Capture each slide
+		for (let i = 0; i < state.slides.length; i++) {
+			const entry = state.slides[i];
+
+			// Update button text with progress
+			downloadAllBtn.textContent = `📦 Processing ${i + 1}/${
+				state.slides.length
+			}...`;
+
+			// Hide share button and demo badge during capture
+			if (entry.shareButton) {
+				entry.shareButton.classList.add("hide-capturing");
+			}
+			const demoBadge = entry.element.querySelector(".demo-badge");
+			if (demoBadge) {
+				demoBadge.classList.add("hide-capturing");
+			}
+
+			// Store original styles
+			const originalWidth = entry.element.style.width;
+			const originalHeight = entry.element.style.height;
+			const originalMaxHeight = entry.element.style.maxHeight;
+			const originalMinHeight = entry.element.style.minHeight;
+			const originalPadding = entry.element.style.padding;
+
+			// Set dimensions for Instagram
+			entry.element.style.width = "500px";
+			entry.element.style.height = "920px";
+			entry.element.style.maxHeight = "920px";
+			entry.element.style.minHeight = "920px";
+			entry.element.style.padding =
+				"clamp(32px, 4.5vw, 48px) clamp(28px, 4vw, 48px)";
+
+			// Wait for reflow
+			await new Promise((resolve) => setTimeout(resolve, 100));
+
+			// Capture slide
+			const slideCanvas = await html2canvas(entry.element, {
+				backgroundColor: "#000000",
+				scale: 2,
+				useCORS: true,
+				allowTaint: true,
+				logging: false,
+				imageTimeout: 0,
+			});
+
+			// Restore styles
+			entry.element.style.width = originalWidth;
+			entry.element.style.height = originalHeight;
+			entry.element.style.maxHeight = originalMaxHeight;
+			entry.element.style.minHeight = originalMinHeight;
+			entry.element.style.padding = originalPadding;
+
+			// Restore share button and demo badge
+			if (entry.shareButton) {
+				entry.shareButton.classList.remove("hide-capturing");
+			}
+			if (demoBadge) {
+				demoBadge.classList.remove("hide-capturing");
+			}
+
+			// Create final Instagram story canvas
+			const storyCanvas = document.createElement("canvas");
+			storyCanvas.width = targetWidth;
+			storyCanvas.height = targetHeight;
+			const ctx = storyCanvas.getContext("2d");
+
+			// Fill with black background
+			ctx.fillStyle = "#000000";
+			ctx.fillRect(0, 0, targetWidth, targetHeight);
+
+			// Center the slide canvas
+			const xOffset = (targetWidth - slideCanvas.width) / 2;
+			const yOffset = (targetHeight - slideCanvas.height) / 2;
+			ctx.drawImage(slideCanvas, xOffset, yOffset);
+
+			// Convert to blob and add to ZIP
+			const blob = await new Promise((resolve) => {
+				storyCanvas.toBlob(resolve, "image/png");
+			});
+
+			if (blob) {
+				folder.file(`slide-${String(i + 1).padStart(2, "0")}.png`, blob);
+			}
+		}
+
+		// Generate and download ZIP
+		downloadAllBtn.textContent = "📦 Finalizing...";
+		const zipBlob = await zip.generateAsync({ type: "blob" });
+		const timestamp = new Date().toISOString().slice(0, 10);
+		downloadBlob(zipBlob, `chatrecap-${timestamp}.zip`);
+
+		// Success message
+		const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+		if (isMobile) {
+			alert(
+				`All ${state.slides.length} slides saved! Each slide is optimized for Instagram stories (1080x1920). Upload them from your gallery.`
+			);
+		} else {
+			alert(
+				`Successfully downloaded ${state.slides.length} slides! Each slide is formatted for Instagram stories (1080x1920).`
+			);
+		}
+	} catch (error) {
+		console.error("Failed to create ZIP:", error);
+		alert("Failed to create ZIP file. Please try again.");
+	} finally {
+		// Restore button state
+		downloadAllBtn.disabled = false;
+		downloadAllBtn.classList.remove("downloading");
+		downloadAllBtn.textContent = originalText;
+	}
 }
