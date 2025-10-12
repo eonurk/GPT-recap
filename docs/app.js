@@ -350,6 +350,10 @@ fileInput.addEventListener("change", async (event) => {
 		storyContainer.classList.remove("hidden");
 		renderStory(analysis);
 		setLoading(false);
+
+		setTimeout(() => {
+			storyContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+		}, 100);
 	} catch (error) {
 		console.error(error);
 		setLoading(false);

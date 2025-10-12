@@ -30,14 +30,6 @@
     <meta name="theme-color" content="#0f172a" />
     <meta name="msapplication-TileColor" content="#6366f1" />
     
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2DDRP47X9B"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-2DDRP47X9B');
-    </script>
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -50,23 +42,30 @@
           <div class="logo-title">
             <img src="logo.png" alt="ChatRecap Logo" class="logo" />
           </div>
-          <h1>ChatRecap</h1>
-          <h2>
-            Upload ChatGPT <code>conversations.json</code> file to get your recap.
-          </h2>
+          <h1 style="font-family: 'Helvetica Neue', Arial, sans-serif; background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">ChatRecap</h1>
+          
+          
+          
+          <p class="hero-tagline">Your ChatGPT Year in Review</p>
+          <p class="hero-subtitle">Beautiful, shareable stories. <br><span   class="">Your data never leaves your device.</span></p>
+          
           <div class="button-group">
             <label class="upload" id="upload-label">
               <input type="file" id="file-input" accept="application/json" />
-              <span>Select File</span>
+              <span>🎉 Select File</span>
             </label>
-            <button id="try-demo-btn" class="demo-btn" type="button">Try Demo</button>
+            <button id="try-demo-btn" class="demo-btn" type="button">👀 Try Demo</button>
           </div>
-          <button id="demo-trigger" class="ghost-link">How to export your data</button>
-          <p class="hint">Your data never leaves this page. Everything runs locally.</p>
+          <p class="hero-instruction">Drop your <code>conversations.json</code> and <br> watch the magic happen 🪄</p>
+          
+          
+          <div class="hero-links">
+            <button id="demo-trigger" class="ghost-link hint">How to export your data</button>
+            <span class="link-separator">•</span>
+            <a href="https://github.com/eonurk/gpt-recap" target="_blank" rel="noopener" class="ghost-link hint">Open source 💜</a>
+          </div>
+         
 
-          <a class="hint" href="https://github.com/eonurk/gpt-recap" target="_blank" rel="noopener">
-            View source code ❤️
-          </a>
         </div>
       </section>
 
