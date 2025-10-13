@@ -46,24 +46,54 @@
           
           
           
-          <p class="hero-tagline">Your ChatGPT Year in Review</p>
-          <p class="hero-subtitle">Beautiful, shareable stories. <br><span   class="">Your data never leaves your device.</span></p>
+          <p class="hero-tagline">✨ Your ChatGPT Year in Review ✨</p>
           
+          <!-- Year Animation -->
+          <div class="year-animation">
+            <div class="calendar-circle">
+              <img src="openai.png" alt="OpenAI Logo" class="center-logo" />
+              <div class="month-dot" data-month="1">Jan</div>
+              <div class="month-dot" data-month="2">Feb</div>
+              <div class="month-dot" data-month="3">Mar</div>
+              <div class="month-dot" data-month="4">Apr</div>
+              <div class="month-dot" data-month="5">May</div>
+              <div class="month-dot" data-month="6">Jun</div>
+              <div class="month-dot" data-month="7">Jul</div>
+              <div class="month-dot" data-month="8">Aug</div>
+              <div class="month-dot" data-month="9">Sep</div>
+              <div class="month-dot" data-month="10">Oct</div>
+              <div class="month-dot" data-month="11">Nov</div>
+              <div class="month-dot" data-month="12">Dec</div>
+              <div class="progress-ring">
+                <svg class="progress-svg" viewBox="0 0 100 100">
+                  <circle class="progress-circle" cx="50" cy="50" r="45" fill="none" stroke="rgba(99, 102, 241, 0.3)" stroke-width="2"/>
+                  <circle class="progress-fill" cx="50" cy="50" r="45" fill="none" stroke="url(#gradient)" stroke-width="3" stroke-linecap="round"/>
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <p class="hero-subtitle"> Beautiful, shareable stories. <br><span class=""> Your data never leaves your device.</span> <br>
+            <a href="https://github.com/eonurk/gpt-recap" target="_blank" rel="noopener" class="hint">Open source 💜</a></p>
+          <p class="hero-subtitle"></p>
           <div class="button-group">
             <label class="upload" id="upload-label">
               <input type="file" id="file-input" accept="application/json" />
               <span>🎉 Select File</span>
             </label>
-            <button id="try-demo-btn" class="demo-btn" type="button">👀 Try Demo</button>
+            <button id="try-demo-btn" class="demo-btn" type="button" style="background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); border: none; color: white;">👀 Try Demo</button>
           </div>
           <p class="hero-instruction">Drop your <code>conversations.json</code> and <br> watch the magic happen 🪄</p>
-          
-          
-          <div class="hero-links">
-            <button id="demo-trigger" class="ghost-link hint">How to export your data</button>
-            <span class="link-separator">•</span>
-            <a href="https://github.com/eonurk/gpt-recap" target="_blank" rel="noopener" class="ghost-link hint">Open source 💜</a>
-          </div>
+
+
+            <button id="demo-trigger" class="ghost-link">How to export your data</button>
+
          
 
         </div>

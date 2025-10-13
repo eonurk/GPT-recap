@@ -5,6 +5,93 @@ const state = {
 	chartDefaultsSet: false,
 };
 
+// Year Animation Controller
+class YearAnimation {
+	constructor() {
+		this.monthDots = document.querySelectorAll(".month-dot");
+		this.progressFill = document.querySelector(".progress-fill");
+		this.currentMonth = 0;
+		this.isAnimating = false;
+		this.init();
+	}
+
+	init() {
+		if (this.monthDots.length === 0) return;
+
+		// Start animation after a short delay
+		setTimeout(() => {
+			this.startYearAnimation();
+		}, 1500);
+	}
+
+	startYearAnimation() {
+		if (this.isAnimating) return;
+		this.isAnimating = true;
+
+		// Reset all months
+		this.monthDots.forEach((dot) => {
+			dot.classList.remove("active", "completed");
+		});
+
+		// Reset progress ring to start
+		if (this.progressFill) {
+			this.progressFill.style.strokeDashoffset = 283;
+		}
+
+		// Wait for the progress ring to fully reset (2s transition) before starting animation
+		setTimeout(() => {
+			this.animateMonth(0);
+		}, 2100);
+	}
+
+	animateMonth(monthIndex) {
+		if (monthIndex >= this.monthDots.length) {
+			// Mark the last month (December) as completed
+			if (this.monthDots.length > 0) {
+				this.monthDots[this.monthDots.length - 1].classList.remove("active");
+				this.monthDots[this.monthDots.length - 1].classList.add("completed");
+			}
+
+			// Animation complete, restart after delay
+			setTimeout(() => {
+				this.isAnimating = false;
+				this.startYearAnimation();
+			}, 4000);
+			return;
+		}
+
+		const monthDot = this.monthDots[monthIndex];
+
+		// Mark previous months as completed
+		if (monthIndex > 0) {
+			this.monthDots[monthIndex - 1].classList.remove("active");
+			this.monthDots[monthIndex - 1].classList.add("completed");
+		}
+
+		// Activate current month
+		monthDot.classList.add("active");
+
+		// Update progress ring
+		const progress = ((monthIndex + 1) / this.monthDots.length) * 100;
+		const circumference = 283; // 2 * π * 45
+		const offset = circumference - (progress / 100) * circumference;
+
+		if (this.progressFill) {
+			this.progressFill.style.strokeDashoffset = offset;
+		}
+
+		// Move to next month after delay
+		setTimeout(() => {
+			this.animateMonth(monthIndex + 1);
+		}, 600);
+	}
+}
+
+// Initialize year animation when DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+	new YearAnimation();
+});
+
 // Embedded demo data (no network request needed!)
 const DEMO_DATA = {
 	context: {
