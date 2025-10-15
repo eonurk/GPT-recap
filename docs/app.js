@@ -1,9 +1,101 @@
 const state = {
 	slides: [],
 	chartInstances: [],
-	chartPalette: ["#60a5fa", "#a855f7", "#34d399", "#f97316", "#facc15"],
+	chartPalette: [
+		"#7f5af0",
+		"#00c2ba",
+		"#f43f5e",
+		"#3b82f6",
+		"#f97316",
+		"#22c55e",
+	],
 	chartDefaultsSet: false,
 };
+
+function generateGradientStops(
+	count,
+	rgb,
+	startOpacity = 0.3,
+	endOpacity = 0.8
+) {
+	const safeCount = Math.max(0, count);
+	if (safeCount === 0) return [];
+	if (safeCount === 1) {
+		const opacity = Math.max(0, Math.min(1, endOpacity));
+		return [`rgba(${rgb}, ${opacity.toFixed(3)})`];
+	}
+	const step = (endOpacity - startOpacity) / (safeCount - 1);
+	return Array.from({ length: safeCount }, (_, idx) => {
+		const opacity = Math.max(0, Math.min(1, startOpacity + step * idx));
+		return `rgba(${rgb}, ${opacity.toFixed(3)})`;
+	});
+}
+
+const DEMO_HOURLY_LABELS = [
+	"00:00",
+	"01:00",
+	"02:00",
+	"03:00",
+	"04:00",
+	"05:00",
+	"06:00",
+	"07:00",
+	"08:00",
+	"09:00",
+	"10:00",
+	"11:00",
+	"12:00",
+	"13:00",
+	"14:00",
+	"15:00",
+	"16:00",
+	"17:00",
+	"18:00",
+	"19:00",
+	"20:00",
+	"21:00",
+	"22:00",
+	"23:00",
+];
+
+const DEMO_HOURLY_DATA = [
+	120, 85, 45, 30, 25, 40, 180, 420, 680, 920, 1150, 1380, 1520, 1785, 1650,
+	1420, 1280, 1050, 880, 720, 580, 450, 320, 180,
+];
+
+const DEMO_WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+const DEMO_WEEKDAY_DATA = [3554, 3280, 3120, 2950, 2880, 1578, 2925];
+
+const DEMO_MONTHLY_LABELS = [
+	"Jan '24",
+	"Feb '24",
+	"Mar '24",
+	"Apr '24",
+	"May '24",
+	"Jun '24",
+	"Jul '24",
+	"Aug '24",
+	"Sep '24",
+	"Oct '24",
+	"Nov '24",
+	"Dec '24",
+	"Jan '25",
+	"Feb '25",
+	"Mar '25",
+	"Apr '25",
+	"May '25",
+	"Jun '25",
+	"Jul '25",
+	"Aug '25",
+	"Sep '25",
+	"Oct '25",
+];
+
+const DEMO_MONTHLY_DATA = [
+	450, 680, 1250, 1420, 1680, 1850, 2100, 1920, 1750, 1580, 1420, 1680, 1950,
+	2180, 2450, 2280, 2050, 1880, 1720, 1580, 1450, 1320,
+];
 
 // Year Animation Controller
 class YearAnimation {
@@ -189,65 +281,17 @@ const DEMO_DATA = {
 		hourlyActivity: {
 			type: "bar",
 			data: {
-				labels: [
-					"00:00",
-					"01:00",
-					"02:00",
-					"03:00",
-					"04:00",
-					"05:00",
-					"06:00",
-					"07:00",
-					"08:00",
-					"09:00",
-					"10:00",
-					"11:00",
-					"12:00",
-					"13:00",
-					"14:00",
-					"15:00",
-					"16:00",
-					"17:00",
-					"18:00",
-					"19:00",
-					"20:00",
-					"21:00",
-					"22:00",
-					"23:00",
-				],
+				labels: DEMO_HOURLY_LABELS,
 				datasets: [
 					{
 						label: "Messages",
-						data: [
-							120, 85, 45, 30, 25, 40, 180, 420, 680, 920, 1150, 1380, 1520,
-							1785, 1650, 1420, 1280, 1050, 880, 720, 580, 450, 320, 180,
-						],
-						backgroundColor: [
-							"rgba(96, 165, 250, 0.25)",
-							"rgba(96, 165, 250, 0.27)",
-							"rgba(96, 165, 250, 0.29)",
-							"rgba(96, 165, 250, 0.31)",
-							"rgba(96, 165, 250, 0.33)",
-							"rgba(96, 165, 250, 0.35)",
-							"rgba(96, 165, 250, 0.37)",
-							"rgba(96, 165, 250, 0.39)",
-							"rgba(96, 165, 250, 0.41)",
-							"rgba(96, 165, 250, 0.43)",
-							"rgba(96, 165, 250, 0.45)",
-							"rgba(96, 165, 250, 0.47)",
-							"rgba(96, 165, 250, 0.49)",
-							"rgba(96, 165, 250, 0.51)",
-							"rgba(96, 165, 250, 0.53)",
-							"rgba(96, 165, 250, 0.55)",
-							"rgba(96, 165, 250, 0.57)",
-							"rgba(96, 165, 250, 0.59)",
-							"rgba(96, 165, 250, 0.61)",
-							"rgba(96, 165, 250, 0.63)",
-							"rgba(96, 165, 250, 0.65)",
-							"rgba(96, 165, 250, 0.67)",
-							"rgba(96, 165, 250, 0.69)",
-							"rgba(96, 165, 250, 0.71)",
-						],
+						data: DEMO_HOURLY_DATA,
+						backgroundColor: generateGradientStops(
+							DEMO_HOURLY_LABELS.length,
+							"127, 190, 240",
+							0.9,
+							0.95
+						),
 					},
 				],
 			},
@@ -269,12 +313,17 @@ const DEMO_DATA = {
 		weekdayActivity: {
 			type: "bar",
 			data: {
-				labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+				labels: DEMO_WEEKDAY_LABELS,
 				datasets: [
 					{
 						label: "Messages",
-						data: [3554, 3280, 3120, 2950, 2880, 1578, 2925],
-						backgroundColor: "rgba(129, 140, 248, 0.55)",
+						data: DEMO_WEEKDAY_DATA,
+						backgroundColor: generateGradientStops(
+							DEMO_WEEKDAY_LABELS.length,
+							"100, 220, 200",
+							0.85,
+							0.95
+						),
 					},
 				],
 			},
@@ -294,62 +343,18 @@ const DEMO_DATA = {
 		monthlyBarChart: {
 			type: "bar",
 			data: {
-				labels: [
-					"Jan '24",
-					"Feb '24",
-					"Mar '24",
-					"Apr '24",
-					"May '24",
-					"Jun '24",
-					"Jul '24",
-					"Aug '24",
-					"Sep '24",
-					"Oct '24",
-					"Nov '24",
-					"Dec '24",
-					"Jan '25",
-					"Feb '25",
-					"Mar '25",
-					"Apr '25",
-					"May '25",
-					"Jun '25",
-					"Jul '25",
-					"Aug '25",
-					"Sep '25",
-					"Oct '25",
-				],
+				labels: DEMO_MONTHLY_LABELS,
 				datasets: [
 					{
 						label: "Messages",
-						data: [
-							450, 680, 1250, 1420, 1680, 1850, 2100, 1920, 1750, 1580, 1420,
-							1680, 1950, 2180, 2450, 2280, 2050, 1880, 1720, 1580, 1450, 1320,
-						],
-						backgroundColor: [
-							"rgba(99, 102, 241, 0.40)",
-							"rgba(99, 102, 241, 0.42)",
-							"rgba(99, 102, 241, 0.44)",
-							"rgba(99, 102, 241, 0.46)",
-							"rgba(99, 102, 241, 0.48)",
-							"rgba(99, 102, 241, 0.50)",
-							"rgba(99, 102, 241, 0.52)",
-							"rgba(99, 102, 241, 0.54)",
-							"rgba(99, 102, 241, 0.56)",
-							"rgba(99, 102, 241, 0.58)",
-							"rgba(99, 102, 241, 0.60)",
-							"rgba(99, 102, 241, 0.62)",
-							"rgba(99, 102, 241, 0.64)",
-							"rgba(99, 102, 241, 0.66)",
-							"rgba(99, 102, 241, 0.68)",
-							"rgba(99, 102, 241, 0.70)",
-							"rgba(99, 102, 241, 0.72)",
-							"rgba(99, 102, 241, 0.74)",
-							"rgba(99, 102, 241, 0.76)",
-							"rgba(99, 102, 241, 0.78)",
-							"rgba(99, 102, 241, 0.80)",
-							"rgba(99, 102, 241, 0.82)",
-						],
-						borderColor: "rgba(99, 102, 241, 0.8)",
+						data: DEMO_MONTHLY_DATA,
+						backgroundColor: generateGradientStops(
+							DEMO_MONTHLY_LABELS.length,
+							"244, 63, 94",
+							0.65,
+							0.95
+						),
+						borderColor: "rgba(244, 63, 94, 0.85)",
 						borderWidth: 1,
 					},
 				],
@@ -1355,8 +1360,8 @@ function buildChartData({
 					{
 						label: "Messages",
 						data: cumulativeData,
-						borderColor: "#38bdf8",
-						backgroundColor: "rgba(56, 189, 248, 0.3)",
+						borderColor: "#7f5af0",
+						backgroundColor: "rgba(127, 90, 240, 0.28)",
 						tension: 0.35,
 						borderWidth: 2,
 						fill: true,
@@ -1386,8 +1391,8 @@ function buildChartData({
 					{
 						label: "Words per reply",
 						data: assistantTrendData,
-						borderColor: "#a855f7",
-						backgroundColor: "rgba(168, 85, 247, 0.3)",
+						borderColor: "#f43f5e",
+						backgroundColor: "rgba(244, 63, 94, 0.28)",
 						tension: 0.3,
 						borderWidth: 2,
 						fill: true,
@@ -1417,8 +1422,11 @@ function buildChartData({
 					{
 						label: "Messages",
 						data: hourCounts,
-						backgroundColor: hourLabels.map(
-							(_, idx) => `rgba(96, 165, 250, ${0.25 + (idx / 24) * 0.6})`
+						backgroundColor: generateGradientStops(
+							hourLabels.length,
+							"127, 90, 240",
+							0.28,
+							0.78
 						),
 					},
 				],
@@ -1446,7 +1454,12 @@ function buildChartData({
 					{
 						label: "Messages",
 						data: weekdayData,
-						backgroundColor: "rgba(129, 140, 248, 0.55)",
+						backgroundColor: generateGradientStops(
+							weekdayData.length,
+							"0, 194, 186",
+							0.35,
+							0.75
+						),
 					},
 				],
 			},
@@ -1471,11 +1484,13 @@ function buildChartData({
 					{
 						label: "Messages",
 						data: sortedMonthly.map((item) => item.value),
-						backgroundColor: monthLabels.map(
-							(_, idx) =>
-								`rgba(99, 102, 241, ${0.4 + (idx / monthLabels.length) * 0.5})`
+						backgroundColor: generateGradientStops(
+							monthLabels.length,
+							"244, 63, 94",
+							0.35,
+							0.8
 						),
-						borderColor: "rgba(99, 102, 241, 0.8)",
+						borderColor: "rgba(244, 63, 94, 0.85)",
 						borderWidth: 1,
 					},
 				],
@@ -2043,7 +2058,13 @@ function renderStory({ context, chartData }, isDemo = false) {
 			tag: "Achievements",
 			title: "Your Badges",
 			body: `You unlocked ${context.achievement_count} achievements!`,
-			achievements: context.achievements,
+			highlights: context.achievements.map((badge) => ({
+				icon: badge.emoji,
+				value: badge.name,
+				detail: badge.description,
+				tone: badge.earned ? "earned" : "unearned",
+			})),
+			highlightsColumns: 2,
 			chart: null,
 			footer: "Flex your badges.",
 		},
@@ -2192,13 +2213,13 @@ function createSlide(definition, index) {
 	const wrapper = document.createElement("div");
 	wrapper.className = "content";
 
-	// Add demo indicator badge on first slide
-	if (state.isDemo && index === 0) {
-		const demoBadge = document.createElement("span");
-		demoBadge.className = "demo-badge";
-		demoBadge.textContent = "Demo Preview";
-		slide.appendChild(demoBadge);
-	}
+	// // Add demo indicator badge on first slide
+	// if (state.isDemo && index === 0) {
+	// 	const demoBadge = document.createElement("span");
+	// 	demoBadge.className = "demo-badge";
+	// 	demoBadge.textContent = "Demo Preview";
+	// 	slide.appendChild(demoBadge);
+	// }
 
 	const tagEl = document.createElement("span");
 	tagEl.className = "tag";
@@ -2248,9 +2269,15 @@ function createSlide(definition, index) {
 	if (definition.highlights?.length) {
 		const highlightsEl = document.createElement("div");
 		highlightsEl.className = "highlights";
+		if (definition.highlightsColumns) {
+			highlightsEl.classList.add(`columns-${definition.highlightsColumns}`);
+		}
 		definition.highlights.forEach((item) => {
 			const card = document.createElement("div");
 			card.className = "highlight";
+			if (item.tone) {
+				card.classList.add(item.tone);
+			}
 			if (item.icon) {
 				const icon = document.createElement("span");
 				icon.className = "emoji";
@@ -2273,34 +2300,6 @@ function createSlide(definition, index) {
 			highlightsEl.appendChild(card);
 		});
 		(chartSection ?? wrapper).appendChild(highlightsEl);
-	}
-
-	// Special handling for achievements slide
-	if (definition.achievements?.length) {
-		const achievementsGrid = document.createElement("div");
-		achievementsGrid.className = "achievements-grid";
-
-		definition.achievements.forEach((badge) => {
-			const badgeCard = document.createElement("div");
-			badgeCard.className = "achievement-badge";
-
-			const badgeEmoji = document.createElement("div");
-			badgeEmoji.className = "badge-emoji";
-			badgeEmoji.textContent = badge.emoji;
-
-			const badgeName = document.createElement("div");
-			badgeName.className = "badge-name";
-			badgeName.textContent = badge.name;
-
-			const badgeDesc = document.createElement("div");
-			badgeDesc.className = "badge-description";
-			badgeDesc.textContent = badge.description;
-
-			badgeCard.append(badgeEmoji, badgeName, badgeDesc);
-			achievementsGrid.appendChild(badgeCard);
-		});
-
-		wrapper.appendChild(achievementsGrid);
 	}
 
 	const shareButton = document.createElement("button");
