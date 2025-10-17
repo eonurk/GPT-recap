@@ -73,6 +73,45 @@ main {
 	margin-top: 8px;
 }
 
+.feedback-cta {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	margin-top: 12px;
+	text-align: center;
+}
+
+.feedback-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 12px 26px;
+	border-radius: 999px;
+	border: 1px solid rgba(99, 102, 241, 0.45);
+	background: rgba(15, 23, 42, 0.65);
+	color: #e2e8f0;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	font-size: 0.85rem;
+	text-decoration: none;
+	transition: transform 0.2s ease, background 0.2s ease, border 0.2s ease;
+}
+
+.feedback-btn:hover {
+	transform: translateY(-1px);
+	background: rgba(67, 24, 255, 0.55);
+	border-color: rgba(99, 102, 241, 0.75);
+}
+
+.feedback-copy {
+	font-size: 0.85rem;
+	color: rgba(226, 232, 240, 0.75);
+	max-width: 380px;
+}
+
 .copy-hint {
 	max-width: 520px;
 	display: flex;
