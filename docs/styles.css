@@ -856,6 +856,14 @@ code {
 	grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
+.highlights.columns-3 {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.highlights.columns-4 {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .highlight {
 	background: linear-gradient(
 		145deg,
@@ -946,8 +954,6 @@ code {
 }
 
 .visual canvas {
-	width: 100%;
-	max-height: 220px;
 	height: auto;
 	display: block;
 }
@@ -1790,4 +1796,51 @@ code {
 .footer-link:focus {
 	color: #a855f7;
 	text-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+}
+
+.word-cloud {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	align-items: center;
+	justify-content: center;
+	flex: 1;
+	width: 100%;
+	padding: 0;
+	border-radius: 16px;
+	background: transparent;
+	border: none;
+	min-height: 0;
+}
+
+.word-cloud-empty {
+	font-size: 0.9rem;
+	color: rgba(226, 232, 240, 0.75);
+	text-align: center;
+	margin: 0;
+}
+
+.word-cloud-canvas {
+	max-height: none;
+
+	image-rendering: auto;
+	display: block;
+}
+
+.word-cloud-wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	flex: 1;
+	min-height: 0;
+}
+
+.word-cloud-capture {
+	width: 100%;
+	height: auto;
+	border-radius: 12px;
+	box-shadow: 0 12px 32px rgba(15, 23, 42, 0.4);
+	border: 1px solid rgba(148, 163, 184, 0.3);
 }

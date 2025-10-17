@@ -67,6 +67,90 @@ const DEMO_WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const DEMO_WEEKDAY_DATA = [3554, 3280, 3120, 2950, 2880, 1578, 2925];
 
+const WORD_CLOUD_STOP_WORDS = new Set(
+	[
+		"the",
+		"a",
+		"an",
+		"and",
+		"or",
+		"but",
+		"for",
+		"nor",
+		"with",
+		"that",
+		"this",
+		"from",
+		"your",
+		"yours",
+		"you",
+		"are",
+		"have",
+		"will",
+		"would",
+		"could",
+		"should",
+		"we",
+		"they",
+		"them",
+		"their",
+		"our",
+		"ours",
+		"was",
+		"were",
+		"been",
+		"into",
+		"than",
+		"then",
+		"over",
+		"under",
+		"about",
+		"like",
+		"just",
+		"make",
+		"need",
+		"want",
+		"help",
+		"what",
+		"when",
+		"where",
+		"why",
+		"how",
+		"can",
+		"please",
+		"thanks",
+		"thank",
+		"chat",
+		"gpt",
+		"chatgpt",
+		"assistant",
+		"user",
+		"system",
+		"tool",
+		"code",
+		"also",
+		"really",
+		"maybe",
+		"well",
+		"even",
+		"still",
+		"back",
+		"said",
+		"more",
+		"less",
+		"into",
+		"using",
+		"use",
+		"used",
+		"new",
+		"like",
+		"know",
+		"look",
+		"point",
+		"time",
+	].map((word) => word.toLowerCase())
+);
+
 const DEMO_MONTHLY_LABELS = [
 	"Jan '24",
 	"Feb '24",
@@ -276,6 +360,58 @@ const DEMO_DATA = {
 		],
 		achievement_count: 4,
 		total_achievements: 8,
+		word_cloud_terms: [
+			{ text: "python", weight: 156 },
+			{ text: "code", weight: 142 },
+			{ text: "data", weight: 128 },
+			{ text: "analysis", weight: 115 },
+			{ text: "function", weight: 98 },
+			{ text: "machine", weight: 87 },
+			{ text: "learning", weight: 85 },
+			{ text: "model", weight: 76 },
+			{ text: "algorithm", weight: 68 },
+			{ text: "build", weight: 65 },
+			{ text: "design", weight: 58 },
+			{ text: "implement", weight: 52 },
+			{ text: "optimize", weight: 48 },
+			{ text: "database", weight: 45 },
+			{ text: "api", weight: 42 },
+			{ text: "frontend", weight: 38 },
+			{ text: "backend", weight: 36 },
+			{ text: "server", weight: 34 },
+			{ text: "client", weight: 32 },
+			{ text: "debug", weight: 30 },
+			{ text: "test", weight: 28 },
+			{ text: "deployment", weight: 26 },
+			{ text: "docker", weight: 24 },
+			{ text: "kubernetes", weight: 22 },
+			{ text: "cloud", weight: 20 },
+			{ text: "aws", weight: 18 },
+			{ text: "react", weight: 17 },
+			{ text: "javascript", weight: 16 },
+			{ text: "typescript", weight: 15 },
+			{ text: "nodejs", weight: 14 },
+			{ text: "query", weight: 13 },
+			{ text: "authentication", weight: 12 },
+			{ text: "interface", weight: 11 },
+			{ text: "component", weight: 10 },
+			{ text: "error", weight: 9 },
+			{ text: "response", weight: 8 },
+			{ text: "request", weight: 8 },
+			{ text: "service", weight: 7 },
+			{ text: "framework", weight: 7 },
+			{ text: "library", weight: 6 },
+			{ text: "endpoint", weight: 6 },
+			{ text: "configuration", weight: 5 },
+			{ text: "validation", weight: 5 },
+			{ text: "authentication", weight: 5 },
+			{ text: "route", weight: 4 },
+			{ text: "middleware", weight: 4 },
+			{ text: "cache", weight: 4 },
+			{ text: "redis", weight: 4 },
+			{ text: "postgres", weight: 3 },
+			{ text: "mongodb", weight: 3 },
+		],
 	},
 	chartData: {
 		hourlyActivity: {
@@ -374,6 +510,62 @@ const DEMO_DATA = {
 				},
 				plugins: { legend: { display: false } },
 			},
+		},
+		wordCloud: {
+			type: "word-cloud",
+			empty: false,
+			terms: [
+				{ text: "python", weight: 156 },
+				{ text: "code", weight: 142 },
+				{ text: "data", weight: 128 },
+				{ text: "analysis", weight: 115 },
+				{ text: "function", weight: 98 },
+				{ text: "machine", weight: 87 },
+				{ text: "learning", weight: 85 },
+				{ text: "model", weight: 76 },
+				{ text: "algorithm", weight: 68 },
+				{ text: "build", weight: 65 },
+				{ text: "design", weight: 58 },
+				{ text: "implement", weight: 52 },
+				{ text: "optimize", weight: 48 },
+				{ text: "database", weight: 45 },
+				{ text: "api", weight: 42 },
+				{ text: "frontend", weight: 38 },
+				{ text: "backend", weight: 36 },
+				{ text: "server", weight: 34 },
+				{ text: "client", weight: 32 },
+				{ text: "debug", weight: 30 },
+				{ text: "test", weight: 28 },
+				{ text: "deployment", weight: 26 },
+				{ text: "docker", weight: 24 },
+				{ text: "kubernetes", weight: 22 },
+				{ text: "cloud", weight: 20 },
+				{ text: "aws", weight: 18 },
+				{ text: "react", weight: 17 },
+				{ text: "javascript", weight: 16 },
+				{ text: "typescript", weight: 15 },
+				{ text: "nodejs", weight: 14 },
+				{ text: "query", weight: 13 },
+				{ text: "authentication", weight: 12 },
+				{ text: "interface", weight: 11 },
+				{ text: "component", weight: 10 },
+				{ text: "error", weight: 9 },
+				{ text: "response", weight: 8 },
+				{ text: "request", weight: 8 },
+				{ text: "service", weight: 7 },
+				{ text: "framework", weight: 7 },
+				{ text: "library", weight: 6 },
+				{ text: "endpoint", weight: 6 },
+				{ text: "configuration", weight: 5 },
+				{ text: "validation", weight: 5 },
+				{ text: "authentication", weight: 5 },
+				{ text: "route", weight: 4 },
+				{ text: "middleware", weight: 4 },
+				{ text: "cache", weight: 4 },
+				{ text: "redis", weight: 4 },
+				{ text: "postgres", weight: 3 },
+				{ text: "mongodb", weight: 3 },
+			],
 		},
 	},
 };
@@ -742,6 +934,7 @@ function analyse(messages) {
 	});
 
 	const conversationSummaries = Array.from(conversationMap.values());
+	const wordCloudTerms = computeWordCloudTerms(messages);
 	const { context, chartData } = buildContext({
 		conversationSummaries,
 		messagesByRole: roleCounts,
@@ -755,6 +948,7 @@ function analyse(messages) {
 		modelCounts,
 		toolCounts,
 		conversationTitles,
+		wordCloudTerms,
 	});
 
 	return { context, chartData };
@@ -773,6 +967,7 @@ function buildContext({
 	modelCounts,
 	toolCounts,
 	conversationTitles,
+	wordCloudTerms,
 }) {
 	const conversationCount = conversationSummaries.length;
 	const messageCountTotal = Array.from(messagesByRole.values()).reduce(
@@ -879,6 +1074,7 @@ function buildContext({
 		assistantDailyStats,
 		hourCounts,
 		weekdayCounts,
+		wordCloudTerms,
 	});
 
 	// Process model usage
@@ -954,6 +1150,7 @@ function buildContext({
 		peak_weekday_messages: formatInteger(getPeakWeekdayMessages(weekdayCounts)),
 		low_weekday_label: computeLowWeekdayLabel(weekdayCounts),
 		low_weekday_messages: formatInteger(getLowWeekdayMessages(weekdayCounts)),
+		word_cloud_terms: wordCloudTerms,
 		// Model usage stats
 		primary_model: modelStats.primary || "—",
 		primary_model_count: modelStats.primaryCount || "—",
@@ -1283,6 +1480,7 @@ function buildChartData({
 	assistantDailyStats,
 	hourCounts,
 	weekdayCounts,
+	wordCloudTerms,
 }) {
 	const sampledAssistantTrend = assistantDailyStats.filter((_, idx, arr) => {
 		if (arr.length <= 90) return true;
@@ -1511,6 +1709,7 @@ function buildChartData({
 				plugins: { legend: { display: false } },
 			},
 		},
+		wordCloud: buildWordCloudData(wordCloudTerms),
 	};
 }
 
@@ -1976,6 +2175,15 @@ function renderStory({ context, chartData }, isDemo = false) {
 			footer: "Your conversation DNA.",
 		},
 		{
+			tag: "Word vibes",
+			title: "Words that stick",
+			body: context.word_cloud_terms?.length
+				? "A quick peek at the words you mention most."
+				: "We need more text from your chats to build a word collage.",
+			chart: chartData.wordCloud,
+			footer: "Share the buzzwords with your crew.",
+		},
+		{
 			tag: "When it happens",
 			title: "Your prime hours",
 			body: "Top times you're chatting with GPT.",
@@ -2071,14 +2279,20 @@ function renderStory({ context, chartData }, isDemo = false) {
 	];
 
 	slides.forEach((definition, idx) => {
-		const { element, canvas, shareButton } = createSlide(definition, idx);
+		const { element, canvas, shareButton, cloudEl } = createSlide(
+			definition,
+			idx
+		);
 		storyRail.appendChild(element);
-		state.slides.push({
+		const entry = {
 			element,
 			canvas,
+			cloudEl,
 			chartConfig: definition.chart,
 			shareButton,
-		});
+		};
+		state.slides.push(entry);
+
 		if (shareButton) {
 			shareButton.addEventListener("click", () => shareSlide(idx));
 		}
@@ -2088,7 +2302,9 @@ function renderStory({ context, chartData }, isDemo = false) {
 		dot.addEventListener("click", () => scrollToSlide(idx));
 		storyProgress.appendChild(dot);
 
-		if (canvas && definition.chart) {
+		if (definition.chart?.type === "word-cloud" && cloudEl) {
+			requestAnimationFrame(() => renderWordCloud(cloudEl, definition.chart));
+		} else if (canvas && definition.chart) {
 			requestAnimationFrame(() => renderChart(canvas, definition.chart));
 		}
 	});
@@ -2213,14 +2429,6 @@ function createSlide(definition, index) {
 	const wrapper = document.createElement("div");
 	wrapper.className = "content";
 
-	// // Add demo indicator badge on first slide
-	// if (state.isDemo && index === 0) {
-	// 	const demoBadge = document.createElement("span");
-	// 	demoBadge.className = "demo-badge";
-	// 	demoBadge.textContent = "Demo Preview";
-	// 	slide.appendChild(demoBadge);
-	// }
-
 	const tagEl = document.createElement("span");
 	tagEl.className = "tag";
 	tagEl.textContent = definition.tag;
@@ -2252,8 +2460,19 @@ function createSlide(definition, index) {
 	}
 
 	let canvas = null;
+	let cloudEl = null;
 	let chartSection = null;
-	if (definition.chart) {
+
+	if (definition.chart?.type === "word-cloud") {
+		chartSection = document.createElement("div");
+		chartSection.className = "chart-insights";
+
+		cloudEl = document.createElement("div");
+		cloudEl.className = "visual word-cloud-wrapper";
+		chartSection.appendChild(cloudEl);
+		wrapper.appendChild(chartSection);
+		slide.classList.add("chart-slide");
+	} else if (definition.chart) {
 		chartSection = document.createElement("div");
 		chartSection.className = "chart-insights";
 
@@ -2316,7 +2535,7 @@ function createSlide(definition, index) {
 	}
 
 	slide.appendChild(wrapper);
-	return { element: slide, canvas, shareButton };
+	return { element: slide, canvas, shareButton, cloudEl };
 }
 
 function renderChart(canvas, config) {
@@ -2639,4 +2858,124 @@ async function downloadAllSlides() {
 		downloadAllBtn.classList.remove("downloading");
 		downloadAllBtn.textContent = originalText;
 	}
+}
+
+function computeWordCloudTerms(messages) {
+	if (!Array.isArray(messages) || !messages.length) return [];
+
+	const wordCounts = new Map();
+	messages.forEach((message) => {
+		const text = (message?.text || "").toLowerCase();
+		if (!text) return;
+
+		const words = text.match(/[a-z0-9']+/g) || [];
+		words.forEach((rawWord) => {
+			const word = rawWord.replace(/'+$/, "");
+			if (!word || WORD_CLOUD_STOP_WORDS.has(word) || word.length < 3) return;
+			wordCounts.set(word, (wordCounts.get(word) || 0) + 1);
+		});
+	});
+
+	return Array.from(wordCounts.entries())
+		.sort((a, b) => b[1] - a[1])
+		.slice(0, 120)
+		.map(([text, weight]) => ({ text, weight }));
+}
+
+function buildWordCloudData(terms) {
+	if (!Array.isArray(terms) || !terms.length) {
+		return { empty: true, terms: [] };
+	}
+	return {
+		empty: false,
+		terms: terms,
+		type: "word-cloud",
+	};
+}
+
+function renderWordCloud(container, config) {
+	container.innerHTML = "";
+
+	if (config.empty) {
+		const msg = document.createElement("p");
+		msg.className = "word-cloud-empty";
+		msg.textContent = "Not enough text yet for a word cloud.";
+		container.appendChild(msg);
+		return;
+	}
+
+	const canvas = document.createElement("canvas");
+	const rect = container.parentElement?.getBoundingClientRect() || {
+		width: 600,
+		height: 400,
+	};
+	const w = Math.max(600, rect.width - 40);
+	const h = Math.max(450, rect.height - 40);
+
+	canvas.width = w;
+	canvas.height = h;
+	canvas.style.width = `${w}px`;
+	canvas.style.height = `${h}px`;
+	canvas.className = "word-cloud-canvas";
+	container.appendChild(canvas);
+
+	// Use wordcloud2.js library
+	if (typeof WordCloud !== "undefined") {
+		// Convert terms to wordcloud2.js format: [['word', weight], ...]
+		const list = config.terms.map((term) => [term.text, term.weight]);
+
+		// Calculate max weight for better scaling
+		const maxWeight = Math.max(...config.terms.map((t) => t.weight));
+
+		WordCloud(canvas, {
+			list: list,
+			gridSize: Math.round((8 * w) / 600),
+			weightFactor: function (size) {
+				// Scale font size based on canvas width and weight
+				return (size / maxWeight) * w * 0.15;
+			},
+			fontFamily: "Manrope, Helvetica Neue, Arial, sans-serif",
+			fontWeight: "bold",
+			color: function () {
+				// Vibrant colors
+				const colors = [
+					"#FF6B9D",
+					"#C44569",
+					"#FFC312",
+					"#12CBC4",
+					"#FDA7DF",
+					"#ED4C67",
+					"#F79F1F",
+					"#A3CB38",
+					"#1289A7",
+					"#D980FA",
+					"#B53471",
+					"#EE5A6F",
+					"#009432",
+					"#0652DD",
+					"#9980FA",
+					"#EA2027",
+					"#FFC312",
+					"#C4E538",
+					"#5758BB",
+					"#6F1E51",
+				];
+				return colors[Math.floor(Math.random() * colors.length)];
+			},
+			rotateRatio: 0.5,
+			rotationSteps: 4,
+			backgroundColor: "transparent",
+			minRotation: -Math.PI / 4,
+			maxRotation: Math.PI / 4,
+			shuffle: true,
+			drawOutOfBound: false,
+			shrinkToFit: true,
+		});
+	}
+}
+
+async function renderWordCloudToCanvas(container) {
+	const canvas = container.querySelector(".word-cloud-canvas");
+	if (!canvas) return null;
+	return canvas;
 }
