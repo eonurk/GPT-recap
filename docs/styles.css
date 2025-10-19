@@ -146,6 +146,19 @@ h1 {
 	font-weight: 500;
 }
 
+.hero-subtitle .price-note {
+	display: inline-block;
+	margin-top: clamp(6px, 1vh, 12px);
+	padding: clamp(6px, 1vh, 10px) clamp(12px, 2.4vw, 16px);
+	border-radius: 999px;
+	background: rgba(148, 163, 184, 0.16);
+	color: #f8fafc;
+	font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+	font-weight: 600;
+	letter-spacing: 0.03em;
+	box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+}
+
 .hero-instruction {
 	font-size: clamp(0.95rem, 2vw, 1.05rem);
 	line-height: 1.4;
@@ -1365,6 +1378,11 @@ code {
 
 	.hero-subtitle {
 		font-size: clamp(0.95rem, 4vw, 1.1rem);
+	}
+
+	.hero-subtitle .price-note {
+		font-size: clamp(0.85rem, 3.6vw, 1rem);
+		padding: clamp(5px, 1.2vh, 8px) clamp(12px, 4vw, 18px);
 	}
 
 	.hero-instruction {
