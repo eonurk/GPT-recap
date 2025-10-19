@@ -12,6 +12,18 @@ const state = {
 	chartDefaultsSet: false,
 };
 
+const STORY_EXPORT = {
+	width: 1080,
+	height: 1920,
+	safeInsetRatio: 0.035, // Tight margin so stories feel full-bleed but stay within safe areas
+	backgroundColor: "#000000",
+};
+
+const STORY_EXPORT_MIN_PADDING = {
+	vertical: 64,
+	horizontal: 48,
+};
+
 function generateGradientStops(
 	count,
 	rgb,
@@ -361,56 +373,20 @@ const DEMO_DATA = {
 		achievement_count: 4,
 		total_achievements: 8,
 		word_cloud_terms: [
-			{ text: "python", weight: 156 },
+			{ text: "love", weight: 200 },
 			{ text: "code", weight: 142 },
-			{ text: "data", weight: 128 },
-			{ text: "analysis", weight: 115 },
-			{ text: "function", weight: 98 },
-			{ text: "machine", weight: 87 },
-			{ text: "learning", weight: 85 },
-			{ text: "model", weight: 76 },
-			{ text: "algorithm", weight: 68 },
-			{ text: "build", weight: 65 },
-			{ text: "design", weight: 58 },
-			{ text: "implement", weight: 52 },
-			{ text: "optimize", weight: 48 },
-			{ text: "database", weight: 45 },
-			{ text: "api", weight: 42 },
-			{ text: "frontend", weight: 38 },
-			{ text: "backend", weight: 36 },
-			{ text: "server", weight: 34 },
-			{ text: "client", weight: 32 },
-			{ text: "debug", weight: 30 },
-			{ text: "test", weight: 28 },
-			{ text: "deployment", weight: 26 },
-			{ text: "docker", weight: 24 },
-			{ text: "kubernetes", weight: 22 },
-			{ text: "cloud", weight: 20 },
-			{ text: "aws", weight: 18 },
-			{ text: "react", weight: 17 },
-			{ text: "javascript", weight: 16 },
-			{ text: "typescript", weight: 15 },
-			{ text: "nodejs", weight: 14 },
-			{ text: "query", weight: 13 },
-			{ text: "authentication", weight: 12 },
-			{ text: "interface", weight: 11 },
-			{ text: "component", weight: 10 },
-			{ text: "error", weight: 9 },
-			{ text: "response", weight: 8 },
-			{ text: "request", weight: 8 },
-			{ text: "service", weight: 7 },
-			{ text: "framework", weight: 7 },
-			{ text: "library", weight: 6 },
-			{ text: "endpoint", weight: 6 },
-			{ text: "configuration", weight: 5 },
-			{ text: "validation", weight: 5 },
-			{ text: "authentication", weight: 5 },
-			{ text: "route", weight: 4 },
-			{ text: "middleware", weight: 4 },
-			{ text: "cache", weight: 4 },
-			{ text: "redis", weight: 4 },
-			{ text: "postgres", weight: 3 },
-			{ text: "mongodb", weight: 3 },
+			{ text: "chatrecap", weight: 128 },
+			{ text: "ai", weight: 128 },
+			{ text: "english", weight: 128 },
+			{ text: "life", weight: 128 },
+			{ text: "happiness", weight: 115 },
+			{ text: "share", weight: 98 },
+			{ text: "sharing", weight: 87 },
+			{ text: "relationship", weight: 8 },
+			{ text: "friends", weight: 8 },
+			{ text: "family", weight: 8 },
+			{ text: "goals", weight: 8 },
+			{ text: "dreams", weight: 8 },
 		],
 	},
 	chartData: {
@@ -2598,6 +2574,65 @@ function scrollToSlide(idx) {
 	entry.element.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
+function getStoryExportConfig() {
+	const scale = Math.max(2, window.devicePixelRatio || 1);
+	const captureWidth = Math.round(STORY_EXPORT.width / scale);
+	const captureHeight = Math.round(STORY_EXPORT.height / scale);
+	const capturePaddingX = Math.max(
+		STORY_EXPORT_MIN_PADDING.horizontal,
+		Math.round(captureWidth * STORY_EXPORT.safeInsetRatio)
+	);
+	const capturePaddingY = Math.max(
+		STORY_EXPORT_MIN_PADDING.vertical,
+		Math.round(captureHeight * STORY_EXPORT.safeInsetRatio)
+	);
+	const exportInsetX = Math.max(
+		Math.round(STORY_EXPORT.width * STORY_EXPORT.safeInsetRatio),
+		STORY_EXPORT_MIN_PADDING.horizontal
+	);
+	const exportInsetY = Math.max(
+		Math.round(STORY_EXPORT.height * STORY_EXPORT.safeInsetRatio),
+		STORY_EXPORT_MIN_PADDING.vertical
+	);
+
+	return {
+		scale,
+		captureWidth,
+		captureHeight,
+		capturePaddingX,
+		capturePaddingY,
+		exportInsetX,
+		exportInsetY,
+		exportWidth: STORY_EXPORT.width,
+		exportHeight: STORY_EXPORT.height,
+		backgroundColor: STORY_EXPORT.backgroundColor,
+	};
+}
+
+function applyStoryExportSizing(element, config) {
+	const original = {
+		width: element.style.width,
+		height: element.style.height,
+		maxHeight: element.style.maxHeight,
+		minHeight: element.style.minHeight,
+		padding: element.style.padding,
+	};
+
+	element.style.width = `${config.captureWidth}px`;
+	element.style.height = `${config.captureHeight}px`;
+	element.style.maxHeight = `${config.captureHeight}px`;
+	element.style.minHeight = `${config.captureHeight}px`;
+	element.style.padding = `${config.capturePaddingY}px ${config.capturePaddingX}px`;
+
+	return () => {
+		element.style.width = original.width;
+		element.style.height = original.height;
+		element.style.maxHeight = original.maxHeight;
+		element.style.minHeight = original.minHeight;
+		element.style.padding = original.padding;
+	};
+}
+
 function shareSlide(entryIndex = currentSlideIndex()) {
 	const entry = state.slides[entryIndex];
 	if (!entry) return;
@@ -2613,107 +2648,90 @@ function shareSlide(entryIndex = currentSlideIndex()) {
 		demoBadge.classList.add("hide-capturing");
 	}
 
-	// Instagram story dimensions: 1080x1920 (9:16 aspect ratio)
-	const targetWidth = 1080;
-	const targetHeight = 1920;
+	const config = getStoryExportConfig();
+	const restoreStyles = applyStoryExportSizing(entry.element, config);
 
-	// Add safe padding for Instagram stories (they crop edges)
-	const safePadding = 80; // 40px on each side when scaled
-
-	// Temporarily set exact dimensions for perfect Instagram capture
-	const originalWidth = entry.element.style.width;
-	const originalHeight = entry.element.style.height;
-	const originalMaxHeight = entry.element.style.maxHeight;
-	const originalMinHeight = entry.element.style.minHeight;
-	const originalPadding = entry.element.style.padding;
-
-	// Set dimensions slightly smaller to account for safe area
-	entry.element.style.width = "500px"; // 540 - 40
-	entry.element.style.height = "920px"; // 960 - 40
-	entry.element.style.maxHeight = "920px";
-	entry.element.style.minHeight = "920px";
-	entry.element.style.padding =
-		"clamp(32px, 4.5vw, 48px) clamp(28px, 4vw, 48px)";
+	const restoreCaptureState = () => {
+		restoreStyles();
+		if (entry.shareButton) {
+			entry.shareButton.classList.remove("hide-capturing");
+		}
+		if (demoBadge) {
+			demoBadge.classList.remove("hide-capturing");
+		}
+	};
 
 	// Wait for reflow
 	setTimeout(() => {
 		html2canvas(entry.element, {
-			backgroundColor: "#000000", // Solid black background to prevent transparency issues
-			scale: 2, // Scale to full Instagram resolution
+			backgroundColor: config.backgroundColor,
+			scale: config.scale,
 			useCORS: true,
 			allowTaint: true,
 			logging: false,
 			imageTimeout: 0,
-		}).then((slideCanvas) => {
-			// Restore original dimensions and padding
-			entry.element.style.width = originalWidth;
-			entry.element.style.height = originalHeight;
-			entry.element.style.maxHeight = originalMaxHeight;
-			entry.element.style.minHeight = originalMinHeight;
-			entry.element.style.padding = originalPadding;
+		})
+			.then((slideCanvas) => {
+				restoreCaptureState();
 
-			// Restore share button
-			if (entry.shareButton) {
-				entry.shareButton.classList.remove("hide-capturing");
-			}
+				const storyCanvas = document.createElement("canvas");
+				storyCanvas.width = config.exportWidth;
+				storyCanvas.height = config.exportHeight;
+				const ctx = storyCanvas.getContext("2d");
 
-			// Restore demo badge
-			if (demoBadge) {
-				demoBadge.classList.remove("hide-capturing");
-			}
+				ctx.fillStyle = config.backgroundColor;
+				ctx.fillRect(0, 0, config.exportWidth, config.exportHeight);
 
-			// Create final Instagram story canvas with proper centering
-			const storyCanvas = document.createElement("canvas");
-			storyCanvas.width = targetWidth;
-			storyCanvas.height = targetHeight;
-			const ctx = storyCanvas.getContext("2d");
+				const drawWidth = config.exportWidth - config.exportInsetX * 2;
+				const drawHeight = config.exportHeight - config.exportInsetY * 2;
+				ctx.drawImage(
+					slideCanvas,
+					config.exportInsetX,
+					config.exportInsetY,
+					drawWidth,
+					drawHeight
+				);
 
-			// Fill with black background
-			ctx.fillStyle = "#000000";
-			ctx.fillRect(0, 0, targetWidth, targetHeight);
-
-			// Center the slide canvas
-			const xOffset = (targetWidth - slideCanvas.width) / 2;
-			const yOffset = (targetHeight - slideCanvas.height) / 2;
-
-			ctx.drawImage(slideCanvas, xOffset, yOffset);
-
-			// Convert to blob and share
-			storyCanvas.toBlob((blob) => {
-				if (!blob) return;
-				const index = state.slides.indexOf(entry) + 1;
-				const fileName = `chatrecap-story-${index}.png`;
-				if (
-					navigator.canShare &&
-					navigator.canShare({
-						files: [new File([blob], fileName, { type: "image/png" })],
-					})
-				) {
-					const file = new File([blob], fileName, { type: "image/png" });
-					navigator
-						.share({
-							files: [file],
-							title: "ChatRecap",
-							text: "My ChatGPT recap ✨",
+				storyCanvas.toBlob((blob) => {
+					if (!blob) return;
+					const index = state.slides.indexOf(entry) + 1;
+					const fileName = `chatrecap-story-${index}.png`;
+					if (
+						navigator.canShare &&
+						navigator.canShare({
+							files: [new File([blob], fileName, { type: "image/png" })],
 						})
-						.catch(() => downloadBlob(blob, fileName));
-				} else {
-					downloadBlob(blob, fileName);
-					const isMobile = /iPhone|iPad|iPod|Android/i.test(
-						navigator.userAgent
-					);
-					if (isMobile) {
-						alert(
-							"Story saved! Optimized for Instagram (1080x1920). Upload to your story from your gallery."
-						);
+					) {
+						const file = new File([blob], fileName, { type: "image/png" });
+						navigator
+							.share({
+								files: [file],
+								title: "ChatRecap",
+								text: "My ChatGPT recap ✨",
+							})
+							.catch(() => downloadBlob(blob, fileName));
 					} else {
-						alert(
-							"Slide saved as Instagram story format (1080x1920). Share it on your story!"
+						downloadBlob(blob, fileName);
+						const isMobile = /iPhone|iPad|iPod|Android/i.test(
+							navigator.userAgent
 						);
+						if (isMobile) {
+							alert(
+								"Story saved! Optimized for Instagram (1080x1920). Upload to your story from your gallery."
+							);
+						} else {
+							alert(
+								"Slide saved as Instagram story format (1080x1920). Share it on your story!"
+							);
+						}
 					}
-				}
-			}, "image/png");
-		});
+				}, "image/png");
+			})
+			.catch((error) => {
+				console.error("Failed to capture slide:", error);
+				restoreCaptureState();
+				alert("Failed to capture slide. Please try again.");
+			});
 	}, 100);
 }
 
@@ -2738,13 +2756,11 @@ async function downloadAllSlides() {
 	const originalText = downloadAllBtn.textContent;
 	downloadAllBtn.textContent = "📦 Creating ZIP...";
 
+	const config = getStoryExportConfig();
+
 	try {
 		const zip = new JSZip();
 		const folder = zip.folder("chatrecap-slides");
-
-		// Instagram story dimensions
-		const targetWidth = 1080;
-		const targetHeight = 1920;
 
 		// Capture each slide
 		for (let i = 0; i < state.slides.length; i++) {
@@ -2764,40 +2780,19 @@ async function downloadAllSlides() {
 				demoBadge.classList.add("hide-capturing");
 			}
 
-			// Store original styles
-			const originalWidth = entry.element.style.width;
-			const originalHeight = entry.element.style.height;
-			const originalMaxHeight = entry.element.style.maxHeight;
-			const originalMinHeight = entry.element.style.minHeight;
-			const originalPadding = entry.element.style.padding;
-
-			// Set dimensions for Instagram
-			entry.element.style.width = "500px";
-			entry.element.style.height = "920px";
-			entry.element.style.maxHeight = "920px";
-			entry.element.style.minHeight = "920px";
-			entry.element.style.padding =
-				"clamp(32px, 4.5vw, 48px) clamp(28px, 4vw, 48px)";
-
-			// Wait for reflow
+			const restoreStyles = applyStoryExportSizing(entry.element, config);
 			await new Promise((resolve) => setTimeout(resolve, 100));
 
-			// Capture slide
 			const slideCanvas = await html2canvas(entry.element, {
-				backgroundColor: "#000000",
-				scale: 2,
+				backgroundColor: config.backgroundColor,
+				scale: config.scale,
 				useCORS: true,
 				allowTaint: true,
 				logging: false,
 				imageTimeout: 0,
 			});
 
-			// Restore styles
-			entry.element.style.width = originalWidth;
-			entry.element.style.height = originalHeight;
-			entry.element.style.maxHeight = originalMaxHeight;
-			entry.element.style.minHeight = originalMinHeight;
-			entry.element.style.padding = originalPadding;
+			restoreStyles();
 
 			// Restore share button and demo badge
 			if (entry.shareButton) {
@@ -2809,18 +2804,23 @@ async function downloadAllSlides() {
 
 			// Create final Instagram story canvas
 			const storyCanvas = document.createElement("canvas");
-			storyCanvas.width = targetWidth;
-			storyCanvas.height = targetHeight;
+			storyCanvas.width = config.exportWidth;
+			storyCanvas.height = config.exportHeight;
 			const ctx = storyCanvas.getContext("2d");
 
 			// Fill with black background
-			ctx.fillStyle = "#000000";
-			ctx.fillRect(0, 0, targetWidth, targetHeight);
+			ctx.fillStyle = config.backgroundColor;
+			ctx.fillRect(0, 0, config.exportWidth, config.exportHeight);
 
-			// Center the slide canvas
-			const xOffset = (targetWidth - slideCanvas.width) / 2;
-			const yOffset = (targetHeight - slideCanvas.height) / 2;
-			ctx.drawImage(slideCanvas, xOffset, yOffset);
+			const drawWidth = config.exportWidth - config.exportInsetX * 2;
+			const drawHeight = config.exportHeight - config.exportInsetY * 2;
+			ctx.drawImage(
+				slideCanvas,
+				config.exportInsetX,
+				config.exportInsetY,
+				drawWidth,
+				drawHeight
+			);
 
 			// Convert to blob and add to ZIP
 			const blob = await new Promise((resolve) => {
