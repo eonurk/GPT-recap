@@ -633,7 +633,6 @@ code {
 	display: flex;
 	flex-direction: column;
 	gap: clamp(14px, 2vw, 20px);
-	border: 1px solid rgba(236, 233, 254, 0.28);
 	background: linear-gradient(140deg, #4318ff 0%, #7f5af0 42%, #ff4ecd 100%);
 	box-shadow: 0 34px 90px rgba(78, 28, 148, 0.75);
 	color: #f8fafc;
