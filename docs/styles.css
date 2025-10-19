@@ -665,7 +665,6 @@ code {
 }
 
 .chart-slide .visual {
-	max-height: clamp(280px, 38vh, 360px);
 	padding: clamp(8px, 1vh, 12px) 0;
 	display: flex;
 	align-items: center;
