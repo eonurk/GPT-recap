@@ -667,7 +667,7 @@ code {
 
 .chart-slide .chart-insights {
 	display: grid;
-	grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+
 	gap: clamp(12px, 1.8vw, 18px);
 	align-items: stretch;
 	width: 100%;
@@ -676,11 +676,20 @@ code {
 	overflow: hidden;
 }
 
-.chart-slide .visual {
+.chart-slide .visual:not(.word-cloud-wrapper) {
 	padding: clamp(8px, 1vh, 12px) 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	height: 100%;
+	min-height: 0;
+}
+
+.chart-slide .visual.word-cloud-wrapper {
+	padding: 0;
+	display: flex;
+	align-items: stretch;
+	justify-content: stretch;
 	height: 100%;
 	min-height: 0;
 }
@@ -959,13 +968,20 @@ code {
 .visual {
 	flex: 1;
 	display: flex;
-	align-items: center;
-	justify-content: center;
+	align-items: stretch;
+	justify-content: stretch;
 	min-height: 160px;
+	height: 100%;
 }
 
-.visual canvas {
+.visual canvas:not(.word-cloud-canvas) {
 	height: auto;
+	display: block;
+}
+
+.visual .word-cloud-canvas {
+	width: 100% !important;
+	height: 100% !important;
 	display: block;
 }
 
@@ -1219,9 +1235,15 @@ code {
 		gap: clamp(8px, 2vh, 14px);
 	}
 
-	.chart-slide .visual {
+	.chart-slide .visual:not(.word-cloud-wrapper) {
 		max-height: clamp(160px, 42vh, 240px);
 		padding: 0 clamp(4px, 2vw, 8px);
+	}
+
+	.chart-slide .visual.word-cloud-wrapper {
+		max-height: none;
+		padding: 0;
+		height: 100%;
 	}
 
 	.chart-slide .highlights,
@@ -1282,6 +1304,28 @@ code {
 
 	.visual {
 		min-height: 180px;
+	}
+
+	.word-cloud {
+		width: 100%;
+		max-width: 100%;
+		overflow: hidden;
+		flex: 1;
+		height: 100%;
+	}
+
+	.word-cloud-wrapper {
+		width: 100%;
+		max-width: 100%;
+		overflow: hidden;
+		flex: 1;
+		height: 100%;
+	}
+
+	.word-cloud-canvas {
+		max-width: 100% !important;
+		width: 100% !important;
+		height: 100% !important;
 	}
 
 	.story-toolbar {
@@ -1838,15 +1882,17 @@ code {
 
 .word-cloud-canvas {
 	max-height: none;
-
+	max-width: 100%;
+	width: 100% !important;
+	height: 100% !important;
 	image-rendering: auto;
 	display: block;
 }
 
 .word-cloud-wrapper {
 	display: flex;
-	align-items: center;
-	justify-content: center;
+	align-items: stretch;
+	justify-content: stretch;
 	width: 100%;
 	height: 100%;
 	flex: 1;

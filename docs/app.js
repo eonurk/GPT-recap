@@ -432,8 +432,8 @@ const DEMO_DATA = {
 						data: DEMO_WEEKDAY_DATA,
 						backgroundColor: generateGradientStops(
 							DEMO_WEEKDAY_LABELS.length,
-							"100, 220, 200",
-							0.85,
+							"245, 245, 255",
+							0.75,
 							0.95
 						),
 					},
@@ -491,7 +491,40 @@ const DEMO_DATA = {
 			type: "word-cloud",
 			empty: false,
 			terms: [
+				{ text: "love", weight: 200 },
+
+				{ text: "chatrecap", weight: 128 },
+				{ text: "ai", weight: 128 },
+				{ text: "english", weight: 128 },
+				{ text: "life", weight: 128 },
+				{ text: "happiness", weight: 115 },
+				{ text: "share", weight: 98 },
+				{ text: "sharing", weight: 87 },
+				{ text: "relationship", weight: 8 },
+				{ text: "friends", weight: 8 },
+
 				{ text: "python", weight: 156 },
+				{ text: "machine", weight: 187 },
+				{ text: "data", weight: 156 },
+				{ text: "analysis", weight: 115 },
+				{ text: "function", weight: 98 },
+				{ text: "machine", weight: 87 },
+				{ text: "learning", weight: 85 },
+				{ text: "model", weight: 76 },
+				{ text: "algorithm", weight: 68 },
+				{ text: "build", weight: 65 },
+				{ text: "design", weight: 58 },
+				{ text: "implement", weight: 52 },
+				{ text: "optimize", weight: 48 },
+				{ text: "database", weight: 45 },
+				{ text: "api", weight: 42 },
+				{ text: "frontend", weight: 38 },
+				{ text: "backend", weight: 36 },
+				{ text: "server", weight: 34 },
+				{ text: "client", weight: 32 },
+				{ text: "debug", weight: 30 },
+				{ text: "test", weight: 28 },
+
 				{ text: "code", weight: 142 },
 				{ text: "data", weight: 128 },
 				{ text: "analysis", weight: 115 },
@@ -538,9 +571,6 @@ const DEMO_DATA = {
 				{ text: "route", weight: 4 },
 				{ text: "middleware", weight: 4 },
 				{ text: "cache", weight: 4 },
-				{ text: "redis", weight: 4 },
-				{ text: "postgres", weight: 3 },
-				{ text: "mongodb", weight: 3 },
 			],
 		},
 	},
@@ -1630,9 +1660,9 @@ function buildChartData({
 						data: weekdayData,
 						backgroundColor: generateGradientStops(
 							weekdayData.length,
-							"0, 194, 186",
-							0.35,
-							0.75
+							"245, 245, 255",
+							0.75,
+							0.95
 						),
 					},
 				],
@@ -2911,13 +2941,16 @@ function renderWordCloud(container, config) {
 		width: 600,
 		height: 400,
 	};
-	const w = Math.max(600, rect.width - 40);
-	const h = Math.max(450, rect.height - 40);
+
+	// Use full container dimensions
+	const w = rect.width;
+	const h = rect.height;
 
 	canvas.width = w;
 	canvas.height = h;
-	canvas.style.width = `${w}px`;
-	canvas.style.height = `${h}px`;
+	canvas.style.width = "100%";
+	canvas.style.height = "100%";
+	canvas.style.maxWidth = "100%";
 	canvas.className = "word-cloud-canvas";
 	container.appendChild(canvas);
 
@@ -2939,28 +2972,28 @@ function renderWordCloud(container, config) {
 			fontFamily: "Manrope, Helvetica Neue, Arial, sans-serif",
 			fontWeight: "bold",
 			color: function () {
-				// Vibrant colors
+				// Lively pastel colors
 				const colors = [
-					"#FF6B9D",
-					"#C44569",
-					"#FFC312",
-					"#12CBC4",
-					"#FDA7DF",
-					"#ED4C67",
-					"#F79F1F",
-					"#A3CB38",
-					"#1289A7",
-					"#D980FA",
-					"#B53471",
-					"#EE5A6F",
-					"#009432",
-					"#0652DD",
-					"#9980FA",
-					"#EA2027",
-					"#FFC312",
-					"#C4E538",
-					"#5758BB",
-					"#6F1E51",
+					"#FF9ECD",
+					"#FFADDA",
+					"#FFC180",
+					"#FFE066",
+					"#8DE4AF",
+					"#7FDBDA",
+					"#89CFF0",
+					"#B4A7D6",
+					"#D291BC",
+					"#F4A4C4",
+					"#FFB5E8",
+					"#FFCCF9",
+					"#FFBA92",
+					"#FFDA9E",
+					"#96E6B3",
+					"#A0E7E5",
+					"#C4A4FF",
+					"#DDA0DD",
+					"#FFB7D5",
+					"#C5A3FF",
 				];
 				return colors[Math.floor(Math.random() * colors.length)];
 			},
