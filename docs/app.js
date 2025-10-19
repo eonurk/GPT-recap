@@ -1977,6 +1977,122 @@ function renderStory({ context, chartData }, isDemo = false) {
 		},
 
 		{
+			tag: "Word vibes",
+			title: "Words that stick",
+			body: context.word_cloud_terms?.length
+				? "A quick peek at the words you mention most."
+				: "We need more text from your chats to build a word collage.",
+			chart: chartData.wordCloud,
+			footer: "Share the buzzwords with your crew.",
+		},
+
+		{
+			tag: "Top topics",
+			title: "What you talk about",
+			body: "Your most discussed subjects.",
+			highlights: [
+				{
+					icon: "💡",
+					label: "Most common",
+					value: context.top_topic_1,
+					detail: "",
+				},
+				{
+					icon: "🔍",
+					label: "Runner up",
+					value: context.top_topic_2,
+					detail: "",
+				},
+				{
+					icon: "📌",
+					label: "Also trending",
+					value: context.top_topic_3,
+					detail: "",
+				},
+			],
+			chart: null,
+			footer: "Your conversation DNA.",
+		},
+		{
+			tag: "When it happens",
+			title: "Your prime hours",
+			body: "Top times you're chatting with GPT.",
+			highlights: [
+				{
+					icon: "⏰",
+					label: "Most active hour",
+					value: context.peak_hour_label,
+					detail:
+						context.peak_hour_messages === "—"
+							? "No activity yet"
+							: `${context.peak_hour_messages} messages`,
+				},
+				{
+					icon: "🌗",
+					label: "Day split",
+					value: context.daypart_split,
+					detail: context.night_share,
+				},
+			],
+			chart: chartData.hourlyActivity,
+			footer: `Last update: ${context.last_date}`,
+		},
+
+		{
+			tag: "Monthly activity",
+			title: "Messages by month",
+			body: "Your ChatGPT usage visualized month-by-month.",
+			highlights: [
+				{
+					icon: "🗓️",
+					label: "Peak month",
+					value: context.peak_month_label,
+					detail:
+						context.peak_month_value === "—"
+							? "—"
+							: `${context.peak_month_value} messages`,
+				},
+				{
+					icon: "📉",
+					label: "Quietest month",
+					value: context.quiet_month_label || "—",
+					detail:
+						context.quiet_month_value === "—"
+							? "—"
+							: `${context.quiet_month_value} messages`,
+				},
+			],
+			chart: chartData.monthlyBarChart,
+			footer: "See the patterns emerge.",
+		},
+		{
+			tag: "Weekly cadence",
+			title: "Where the buzz lands",
+			body: "Days of the week GPT shows up with you.",
+			highlights: [
+				{
+					icon: "🏅",
+					label: "Weekly MVP",
+					value: context.peak_weekday_label,
+					detail:
+						context.peak_weekday_messages === "—"
+							? "No activity yet"
+							: `${context.peak_weekday_messages} messages`,
+				},
+				{
+					icon: "😴",
+					label: "Chill day",
+					value: context.low_weekday_label,
+					detail:
+						context.low_weekday_messages === "—"
+							? "—"
+							: `${context.low_weekday_messages} messages`,
+				},
+			],
+			chart: chartData.weekdayActivity,
+			footer: "Share your grind with the crew.",
+		},
+		{
 			tag: "Momentum",
 			title: "Streaks & pauses",
 			body: "Celebrate the grind and the reset days.",
@@ -2123,121 +2239,7 @@ function renderStory({ context, chartData }, isDemo = false) {
 			chart: null,
 			footer: "The toolkit matters.",
 		},
-		{
-			tag: "Top topics",
-			title: "What you talk about",
-			body: "Your most discussed subjects.",
-			highlights: [
-				{
-					icon: "💡",
-					label: "Most common",
-					value: context.top_topic_1,
-					detail: "",
-				},
-				{
-					icon: "🔍",
-					label: "Runner up",
-					value: context.top_topic_2,
-					detail: "",
-				},
-				{
-					icon: "📌",
-					label: "Also trending",
-					value: context.top_topic_3,
-					detail: "",
-				},
-			],
-			chart: null,
-			footer: "Your conversation DNA.",
-		},
-		{
-			tag: "Word vibes",
-			title: "Words that stick",
-			body: context.word_cloud_terms?.length
-				? "A quick peek at the words you mention most."
-				: "We need more text from your chats to build a word collage.",
-			chart: chartData.wordCloud,
-			footer: "Share the buzzwords with your crew.",
-		},
-		{
-			tag: "When it happens",
-			title: "Your prime hours",
-			body: "Top times you're chatting with GPT.",
-			highlights: [
-				{
-					icon: "⏰",
-					label: "Most active hour",
-					value: context.peak_hour_label,
-					detail:
-						context.peak_hour_messages === "—"
-							? "No activity yet"
-							: `${context.peak_hour_messages} messages`,
-				},
-				{
-					icon: "🌗",
-					label: "Day split",
-					value: context.daypart_split,
-					detail: context.night_share,
-				},
-			],
-			chart: chartData.hourlyActivity,
-			footer: `Last update: ${context.last_date}`,
-		},
 
-		{
-			tag: "Monthly activity",
-			title: "Messages by month",
-			body: "Your ChatGPT usage visualized month-by-month.",
-			highlights: [
-				{
-					icon: "🗓️",
-					label: "Peak month",
-					value: context.peak_month_label,
-					detail:
-						context.peak_month_value === "—"
-							? "—"
-							: `${context.peak_month_value} messages`,
-				},
-				{
-					icon: "📉",
-					label: "Quietest month",
-					value: context.quiet_month_label || "—",
-					detail:
-						context.quiet_month_value === "—"
-							? "—"
-							: `${context.quiet_month_value} messages`,
-				},
-			],
-			chart: chartData.monthlyBarChart,
-			footer: "See the patterns emerge.",
-		},
-		{
-			tag: "Weekly cadence",
-			title: "Where the buzz lands",
-			body: "Days of the week GPT shows up with you.",
-			highlights: [
-				{
-					icon: "🏅",
-					label: "Weekly MVP",
-					value: context.peak_weekday_label,
-					detail:
-						context.peak_weekday_messages === "—"
-							? "No activity yet"
-							: `${context.peak_weekday_messages} messages`,
-				},
-				{
-					icon: "😴",
-					label: "Chill day",
-					value: context.low_weekday_label,
-					detail:
-						context.low_weekday_messages === "—"
-							? "—"
-							: `${context.low_weekday_messages} messages`,
-				},
-			],
-			chart: chartData.weekdayActivity,
-			footer: "Share your grind with the crew.",
-		},
 		{
 			tag: "Achievements",
 			title: "Your Badges",
