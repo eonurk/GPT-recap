@@ -15,13 +15,13 @@ const state = {
 const STORY_EXPORT = {
 	width: 1080,
 	height: 1920,
-	safeInsetRatio: 0.035, // Tight margin so stories feel full-bleed but stay within safe areas
+	safeInsetRatio: 0.022, // Lean margin for near full-bleed exports while keeping safe-area padding
 	backgroundColor: "#000000",
 };
 
 const STORY_EXPORT_MIN_PADDING = {
-	vertical: 64,
-	horizontal: 48,
+	vertical: 16,
+	horizontal: 12,
 };
 
 function generateGradientStops(
