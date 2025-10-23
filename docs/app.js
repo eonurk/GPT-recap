@@ -1964,12 +1964,70 @@ function monthToDate(key) {
 	return new Date(Date.UTC(year, month - 1, 1));
 }
 
+function buildMilestones(context) {
+	const milestones = [];
+
+	const firstDate = context?.first_date;
+	if (firstDate && firstDate !== "—") {
+		milestones.push({
+			icon: "🌱",
+			label: "First message",
+			title: firstDate,
+			description: "Where your ChatGPT journey kicked off.",
+		});
+	}
+
+	const busiestDay = context?.busiest_day_label;
+	const busiestCount = context?.busiest_day_value;
+	if (busiestDay && busiestDay !== "—") {
+		const countNumber = Number(
+			typeof busiestCount === "string"
+				? busiestCount.replace(/,/g, "")
+				: busiestCount
+		);
+		const countLabel =
+			busiestCount && busiestCount !== "—"
+				? `${busiestCount} message${countNumber === 1 ? "" : "s"}`
+				: "Peak activity";
+		milestones.push({
+			icon: "🔥",
+			label: "Busiest day",
+			title: busiestDay,
+			description: `Most active day with ${countLabel}.`,
+		});
+	}
+
+	const gapRange = context?.longest_gap_range;
+	const gapLengthRaw = context?.longest_gap_length;
+	const gapLength =
+		typeof gapLengthRaw === "string"
+			? Number(gapLengthRaw.replace(/,/g, ""))
+			: Number(gapLengthRaw);
+	if (
+		gapRange &&
+		gapRange !== "—" &&
+		Number.isFinite(gapLength) &&
+		gapLength > 0
+	) {
+		milestones.push({
+			icon: "🧘",
+			label: "Longest pause",
+			title: gapRange,
+			description: `Took a ${gapLength}-day breather from chatting.`,
+		});
+	}
+
+	return milestones;
+}
+
 function renderStory({ context, chartData }, isDemo = false) {
 	destroyCharts();
 	state.slides = [];
 	state.isDemo = isDemo;
 	storyRail.innerHTML = "";
 	storyProgress.innerHTML = "";
+
+	const milestones = buildMilestones(context);
 
 	const slides = [
 		{
@@ -2154,6 +2212,17 @@ function renderStory({ context, chartData }, isDemo = false) {
 			],
 			chart: null,
 			footer: "Proof you kept building.",
+		},
+		{
+			tag: "Milestones",
+			title: "Moments worth highlighting",
+			body: milestones.length
+				? "Anchor points from your ChatGPT journey."
+				: "Keep chatting to unlock milestone highlights.",
+			timeline: milestones,
+			timelineEmptyMessage: "No standout dates yet — your next chats will change that.",
+			chart: null,
+			footer: "Scroll back through your journey.",
 		},
 		{
 			tag: "Reply craft",
@@ -2527,6 +2596,71 @@ function createSlide(definition, index) {
 			highlightsEl.appendChild(card);
 		});
 		(chartSection ?? wrapper).appendChild(highlightsEl);
+	}
+
+	const hasTimelineItems = Array.isArray(definition.timeline)
+		? definition.timeline.length > 0
+		: false;
+
+	if (hasTimelineItems || definition.timelineEmptyMessage) {
+		const timelineEl = document.createElement("div");
+		timelineEl.className = "timeline";
+		timelineEl.setAttribute("role", "list");
+		const destination = chartSection ?? wrapper;
+
+		if (hasTimelineItems) {
+			definition.timeline.forEach((milestone, index) => {
+				const item = document.createElement("div");
+				item.className = "timeline-item";
+				item.setAttribute("role", "listitem");
+				if (index === 0) item.classList.add("first");
+				if (index === definition.timeline.length - 1) item.classList.add("last");
+
+				const marker = document.createElement("div");
+				marker.className = "timeline-marker";
+				if (milestone.icon) {
+					marker.textContent = milestone.icon;
+				} else {
+					marker.classList.add("no-icon");
+				}
+
+				const copy = document.createElement("div");
+				copy.className = "timeline-copy";
+
+				if (milestone.label) {
+					const labelEl = document.createElement("span");
+					labelEl.className = "timeline-label";
+					labelEl.textContent = milestone.label;
+					copy.appendChild(labelEl);
+				}
+
+				if (milestone.title) {
+					const titleEl = document.createElement("span");
+					titleEl.className = "timeline-title";
+					titleEl.textContent = milestone.title;
+					copy.appendChild(titleEl);
+				}
+
+				if (milestone.description) {
+					const descEl = document.createElement("span");
+					descEl.className = "timeline-description";
+					descEl.textContent = milestone.description;
+					copy.appendChild(descEl);
+				}
+
+				item.append(marker, copy);
+				timelineEl.appendChild(item);
+			});
+		} else if (definition.timelineEmptyMessage) {
+			timelineEl.classList.add("empty");
+			const empty = document.createElement("p");
+			empty.className = "timeline-empty";
+			empty.textContent = definition.timelineEmptyMessage;
+			timelineEl.appendChild(empty);
+		}
+
+		destination.appendChild(timelineEl);
+		slide.classList.add("timeline-slide");
 	}
 
 	const shareButton = document.createElement("button");

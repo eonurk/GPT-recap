@@ -938,6 +938,112 @@ code {
 	line-height: 1.3;
 }
 
+.timeline {
+	--timeline-marker-size: clamp(28px, 4vw, 36px);
+	--timeline-gap: clamp(12px, 2.6vw, 18px);
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: clamp(18px, 3.2vw, 26px);
+	margin-top: clamp(10px, 2vw, 18px);
+}
+
+.timeline::before {
+	content: "";
+	position: absolute;
+	left: calc(var(--timeline-marker-size) / 2);
+	top: calc(var(--timeline-marker-size) / 2);
+	bottom: calc(var(--timeline-marker-size) / 2);
+	width: 2px;
+	background: linear-gradient(
+		180deg,
+		rgba(255, 255, 255, 0.65),
+		rgba(255, 255, 255, 0.1)
+	);
+	border-radius: 999px;
+	opacity: 0.7;
+	pointer-events: none;
+}
+
+.timeline.empty::before {
+	display: none;
+}
+
+.timeline-item {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--timeline-gap);
+	position: relative;
+}
+
+.timeline-marker {
+	flex: 0 0 var(--timeline-marker-size);
+	width: var(--timeline-marker-size);
+	height: var(--timeline-marker-size);
+	border-radius: 50%;
+	background: linear-gradient(
+		145deg,
+		rgba(255, 255, 255, 0.35),
+		rgba(148, 163, 184, 0.12)
+	);
+	border: 1px solid rgba(226, 232, 240, 0.45);
+	box-shadow: 0 12px 32px rgba(15, 23, 42, 0.35);
+	backdrop-filter: blur(10px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: clamp(1rem, 2.4vw, 1.35rem);
+	color: #0f172a;
+	transition: transform 0.2s ease;
+}
+
+.timeline-marker.no-icon::after {
+	content: "";
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: #f8fafc;
+	box-shadow: 0 0 0 5px rgba(248, 250, 252, 0.22);
+}
+
+.timeline-item:hover .timeline-marker {
+	transform: translateY(-2px);
+}
+
+.timeline-copy {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(4px, 1vw, 6px);
+}
+
+.timeline-label {
+	font-size: clamp(0.62rem, 0.9vw, 0.72rem);
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: rgba(226, 232, 240, 0.78);
+	font-weight: 600;
+}
+
+.timeline-title {
+	font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+	font-weight: 700;
+	color: #f8fafc;
+	line-height: 1.2;
+}
+
+.timeline-description {
+	font-size: clamp(0.85rem, 1.4vw, 0.98rem);
+	color: rgba(226, 232, 240, 0.9);
+	line-height: 1.5;
+}
+
+.timeline-empty {
+	margin: 0;
+	padding-left: calc(var(--timeline-marker-size) + var(--timeline-gap));
+	font-size: clamp(0.85rem, 1.4vw, 0.96rem);
+	color: rgba(226, 232, 240, 0.72);
+}
+
 .stat {
 	background: linear-gradient(
 		155deg,
